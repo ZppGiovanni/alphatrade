@@ -1,4 +1,3 @@
-"""momentum.py — Moving average crossover momentum strategy."""
 import pandas as pd
 from strategies.base import Strategy
 
@@ -23,3 +22,14 @@ class MomentumStrategy(Strategy):
         signals[ma_short > ma_long] = 1
         signals[ma_short < ma_long] = -1
         return signals
+
+
+if __name__ == "__main__":
+    import sys
+    sys.path.insert(0, ".")
+    from data.database import load_ohlcv
+    df = load_ohlcv("QQQ")
+    strategy = MomentumStrategy(params={"short_window": 20, "long_window": 50})
+    signals = strategy.generate_signals(df)
+    print(signals.value_counts())
+    print("Momentum signals OK!")
