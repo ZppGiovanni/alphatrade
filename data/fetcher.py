@@ -2,6 +2,9 @@
 fetcher.py — Download historical OHLCV data via yfinance.
 """
 import logging
+import sys
+sys.path.insert(0, '.')
+
 import yfinance as yf
 import pandas as pd
 from data.database import save_ohlcv, init_db
@@ -14,6 +17,9 @@ def fetch_historical(ticker: str, period: str = "2y", interval: str = "1d") -> p
     """Download historical OHLCV for a single ticker."""
     logger.info("Fetching %s (%s, %s)", ticker, period, interval)
     df = yf.download(ticker, period=period, interval=interval, auto_adjust=True, progress=False)
+    # Fix: flatten multi-level columns if present
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
     df.columns = [c.lower() for c in df.columns]
     df.index = df.index.strftime("%Y-%m-%d")
     df.index.name = "timestamp"
