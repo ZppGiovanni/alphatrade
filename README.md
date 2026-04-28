@@ -1,74 +1,99 @@
-# AlphaTrade — Algorithmic ETF Trading System
+# ⚡ AlphaTrade — Algorithmic ETF Trading System
 
-> Final project for Programming in Finance II — USI Lugano, 2026  
-> Group: [nomi del gruppo]
+![Python](https://img.shields.io/badge/Python-3.11+-blue?style=flat-square&logo=python)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.33+-red?style=flat-square&logo=streamlit)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![USI](https://img.shields.io/badge/USI-Programming%20in%20Finance%20II-purple?style=flat-square)
+
+> Final project for **Programming in Finance II** — USI Lugano, 2026
+> Group: Andrea Matteri · Giovanni Zoppis · Manuela Benfante · Federico Pizzati
 
 ## Overview
 
-AlphaTrade is an algorithmic trading system that allocates dynamically across five
-thematic ETFs using quantitative strategies, portfolio optimization, and machine learning.
+AlphaTrade is an algorithmic trading system that dynamically allocates across five thematic ETFs using quantitative strategies, portfolio optimization, and machine learning. The system combines rule-based signals with an ensemble voting mechanism and AI-powered market analysis.
 
 **Universe**: QQQ (Tech) · XLE (Energy) · GLD (Gold) · XLV (Healthcare) · ARKK (Innovation)
 
-**Core thesis**: A rules-based system can exploit regime changes across uncorrelated
-thematic sectors — rotating between growth, value, safe-haven, and defensive assets —
-outperforming a static equal-weight benchmark on a risk-adjusted basis.
+**Core thesis**: A rules-based system can exploit regime changes across uncorrelated thematic sectors — rotating between growth, value, safe-haven, and defensive assets — outperforming a static equal-weight benchmark on a risk-adjusted basis.
 
-## Features
+---
 
-- **Live market data** via Alpaca WebSocket + historical data via yfinance
-- **Quantitative strategies**: mean reversion, momentum, moving average crossover
-- **Portfolio optimization**: Markowitz mean-variance, max-Sharpe ratio
-- **ML signal**: scikit-learn model for directional price prediction
-- **Backtesting engine**: walk-forward testing with performance metrics
-- **Web dashboard**: Streamlit app with interactive charts and portfolio analytics
-- **Agentic development**: AI-assisted contributions via AGENTS.md
+## 🏆 Key Results
 
-## Project structure
+| Asset | Strategy | Return | Buy & Hold | Sharpe |
+|-------|----------|--------|------------|--------|
+| XLE | Mean Reversion | **+49.4%** | +25.5% | 1.8 |
+| GLD | Momentum | **+63.6%** | +98.9% | 1.29 |
+| QQQ | MACD Crossover | **+31.5%** | +98.9% | 0.92 |
 
-```
+---
+
+## ✨ Features
+
+- **Live market data** — historical OHLCV via yfinance (2Y, 2501 rows)
+- **Technical indicators** — SMA, RSI, MACD, Bollinger Bands (auto-calculated)
+- **4 trading strategies** — Momentum, Mean Reversion, MACD Crossover, ML (Random Forest)
+- **Ensemble signal** — voting system combining all 3 quant strategies (-3 to +3 score)
+- **Portfolio optimization** — Markowitz mean-variance, max-Sharpe ratio
+- **Backtesting engine** — equity curve, Sharpe ratio, max drawdown
+- **Web dashboard** — Streamlit with candlestick charts, RSI subplot, interactive signals
+- **AI market analysis** — LLM-powered insights via Groq LLaMA 3.3 70B
+- **Agentic development** — AI agent contributions via AGENTS.md + Pull Requests
+
+---
+
+## 📁 Project Structure
 alphatrade/
-├── data/               # Market data fetching, streaming, storage
-│   ├── fetcher.py      # yfinance historical download
-│   ├── stream.py       # Alpaca WebSocket live feed
-│   ├── normalizer.py   # Cleaning, validation, technical indicators
-│   └── database.py     # SQLite read/write helpers
-├── strategies/         # Trading signal generation
-│   ├── base.py         # Abstract Strategy interface
-│   ├── mean_reversion.py
-│   ├── momentum.py
-│   └── ml_model.py     # ML-based signal (scikit-learn)
-├── portfolio/          # Portfolio construction
-│   ├── optimizer.py    # Markowitz / max-Sharpe optimization
-│   └── risk.py         # Position sizing, stop-loss, drawdown
-├── execution/          # Order management
+├── data/
+│   ├── fetcher.py        # yfinance historical download
+│   ├── stream.py         # Alpaca WebSocket live feed
+│   ├── normalizer.py     # Cleaning, validation, technical indicators
+│   └── database.py       # SQLite read/write helpers
+├── strategies/
+│   ├── base.py           # Abstract Strategy interface
+│   ├── mean_reversion.py # Z-score mean reversion
+│   ├── momentum.py       # Dual moving average crossover
+│   ├── macd_crossover.py # MACD signal line crossover (AI agent PR)
+│   └── ml_model.py       # Random Forest classifier
+├── portfolio/
+│   ├── optimizer.py      # Markowitz / max-Sharpe optimization
+│   └── risk.py           # Backtesting engine, drawdown, Sharpe
+├── execution/
 │   └── order_manager.py  # Paper trading via Alpaca
-├── dashboard/          # Web interface
-│   └── app.py          # Streamlit dashboard
-├── tests/              # Unit tests (pytest)
-├── docs/               # Additional documentation
-├── AGENTS.md           # AI agent contribution guide
+├── dashboard/
+│   └── app.py            # Streamlit dashboard
+├── tests/
+│   └── test_strategies.py
+├── docs/
+├── AGENTS.md             # AI agent contribution guide
 └── requirements.txt
-```
 
-## Installation
+---
+
+## 🚀 Installation
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/alphatrade.git
+git clone https://github.com/ZppGiovanni/alphatrade.git
 cd alphatrade
 
 # 2. Create and activate virtual environment
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
 
 # 4. Configure environment variables
 cp .env.example .env
-# Edit .env and add your Alpaca API keys (free at alpaca.markets)
+```
 
+Edit .env with your API keys:
+ALPACA_KEY=your_alpaca_key
+ALPACA_SECRET=your_alpaca_secret
+GROQ_API_KEY=your_groq_key
+
+```bash
 # 5. Initialize the database
 python data/database.py --init
 
@@ -79,32 +104,34 @@ python data/fetcher.py
 streamlit run dashboard/app.py
 ```
 
-## Usage
+---
 
-### Download historical data
-```python
-from data.fetcher import fetch_all
-
-fetch_all()  # Downloads 2y of daily OHLCV for all 5 ETFs
-```
+## 📖 Usage
 
 ### Run a strategy backtest
 ```python
 from data.database import load_ohlcv
-from strategies.momentum import MomentumStrategy
-from portfolio.optimizer import MaxSharpeOptimizer
+from data.normalizer import add_indicators
+from strategies.macd_crossover import MACDCrossoverStrategy
+from portfolio.risk import backtest
 
 df = load_ohlcv("QQQ")
-strategy = MomentumStrategy(params={"window": 20})
+df = add_indicators(df)
+strategy = MACDCrossoverStrategy(params={})
 signals = strategy.generate_signals(df)
+results = backtest(df["close"], signals)
+print(f"Return: {results['total_return']:+.1%}")
+print(f"Sharpe: {results['sharpe_ratio']:.2f}")
 ```
 
-### Launch dashboard
+### Run tests
 ```bash
-streamlit run dashboard/app.py
+pytest tests/ -v
 ```
 
-## Assets
+---
+
+## 📊 Assets
 
 | Ticker | Name | Theme | Risk |
 |--------|------|-------|------|
@@ -114,33 +141,51 @@ streamlit run dashboard/app.py
 | XLV | Health Care Select SPDR | Defensive | Low |
 | ARKK | ARK Innovation ETF | Disruptive Innovation | Very High |
 
-## Tech stack
+---
+
+## 🛠 Tech Stack
 
 | Component | Technology |
-|-----------|-----------|
+|-----------|------------|
 | Language | Python 3.11+ |
 | Data | yfinance, alpaca-py |
-| Database | SQLite + SQLAlchemy |
-| Indicators | pandas-ta |
+| Database | SQLite |
+| Indicators | pandas, numpy |
 | Optimization | PyPortfolioOpt |
-| ML | scikit-learn |
+| ML | scikit-learn (Random Forest) |
 | Dashboard | Streamlit + Plotly |
+| AI Analysis | Groq API (LLaMA 3.3 70B) |
 | Testing | pytest |
+| Code style | black |
 
-## Team
+---
 
-| Name | Role |
-|------|------|
-| [Nome 1] | Data layer — pipeline, database, live feed |
-| [Nome 2] | Strategies — signals, backtesting, optimization |
-| [Nome 3] | ML + execution — model, order manager, risk |
-| [Nome 4] | Dashboard — Streamlit app, docs, LaTeX report |
+## 👥 Team
 
-## Academic documentation
+| Name | Role | Contribution |
+|------|------|-------------|
+| **Andrea Matteri** | Strategies · AI Agent · Dashboard | MACD Crossover strategy, AI agent PR, dashboard redesign, ensemble signal, AI market analysis |
+| **Giovanni Zoppis** | Architecture · Data · ML · Backend | Data pipeline, database, strategies, ML model, portfolio optimizer, backtesting engine, dashboard |
+| **Manuela Benfante** | Documentation · Testing | LaTeX report, testing support |
+| **Federico Pizzati** | Documentation · Presentation | LaTeX report, presentation slides |
 
-PDF report available on iCorsi. Includes project plan, development diary,
-mathematical background (Markowitz, technical indicators, ML model),
-sample results, and lessons learned.
+---
+
+## 🤖 AI Tools Used
+
+- **Claude (Anthropic)** — architecture design, code generation, MACD Crossover strategy (AI agent PR)
+- **Groq LLaMA 3.3 70B** — live AI market analysis in the dashboard
+- **GitHub Copilot** — inline code suggestions
+
+All AI-generated code was reviewed, tested, and integrated by the team.
+
+---
+
+## 📄 Academic Documentation
+
+PDF report available on iCorsi. Includes project plan, development diary, mathematical background (Markowitz, MACD, RSI, Random Forest), sample results, and lessons learned.
+
+---
 
 ## License
 
