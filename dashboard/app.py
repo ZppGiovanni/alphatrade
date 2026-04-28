@@ -1,4 +1,5 @@
 import sys
+
 sys.path.insert(0, ".")
 import streamlit as st
 import plotly.graph_objects as go
@@ -8,6 +9,7 @@ from data.database import load_ohlcv
 from data.normalizer import add_indicators
 from strategies.mean_reversion import MeanReversionStrategy
 from strategies.momentum import MomentumStrategy
+from strategies.macd_crossover import MACDCrossoverStrategy
 from portfolio.optimizer import compute_weights
 
 ASSETS = ["QQQ", "XLE", "GLD", "XLV", "ARKK"]
@@ -19,7 +21,7 @@ st.caption("USI Programming in Finance II, 2026")
 # Sidebar
 st.sidebar.header("Settings")
 selected = st.sidebar.selectbox("Asset", ASSETS)
-strategy_name = st.sidebar.selectbox("Strategy", ["Momentum", "Mean Reversion"])
+strategy_name = st.sidebar.selectbox("Strategy", ["Momentum", "Mean Reversion", "MACD Crossover"])
 
 # Load data
 df = load_ohlcv(selected)
@@ -29,18 +31,36 @@ df = add_indicators(df)
 st.subheader(f"{selected} — Price & Signals")
 if strategy_name == "Mean Reversion":
     strategy = MeanReversionStrategy(params={"window": 20, "z_threshold": 1.5})
+elif strategy_name == "MACD Crossover":
+    strategy = MACDCrossoverStrategy(params={})
 else:
     strategy = MomentumStrategy(params={"short_window": 20, "long_window": 50})
 
 signals = strategy.generate_signals(df)
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=df.index, y=df["close"], name="Close", line=dict(color="#4FC3F7")))
+fig.add_trace(
+    go.Scatter(x=df.index, y=df["close"], name="Close", line=dict(color="#4FC3F7"))
+)
 buys = df[signals == 1]
 sells = df[signals == -1]
-fig.add_trace(go.Scatter(x=buys.index, y=buys["close"], mode="markers",
-    name="Buy", marker=dict(color="green", size=8, symbol="triangle-up")))
-fig.add_trace(go.Scatter(x=sells.index, y=sells["close"], mode="markers",
-    name="Sell", marker=dict(color="red", size=8, symbol="triangle-down")))
+fig.add_trace(
+    go.Scatter(
+        x=buys.index,
+        y=buys["close"],
+        mode="markers",
+        name="Buy",
+        marker=dict(color="green", size=8, symbol="triangle-up"),
+    )
+)
+fig.add_trace(
+    go.Scatter(
+        x=sells.index,
+        y=sells["close"],
+        mode="markers",
+        name="Sell",
+        marker=dict(color="red", size=8, symbol="triangle-down"),
+    )
+)
 fig.update_layout(template="plotly_dark", height=400)
 st.plotly_chart(fig, use_container_width=True)
 
@@ -59,8 +79,11 @@ for ticker in ASSETS:
     prices[ticker] = d["close"]
 
 weights = compute_weights(prices)
-fig2 = px.pie(values=list(weights.values()), names=list(weights.keys()),
-    color_discrete_sequence=px.colors.sequential.Blues_r)
+fig2 = px.pie(
+    values=list(weights.values()),
+    names=list(weights.keys()),
+    color_discrete_sequence=px.colors.sequential.Blues_r,
+)
 fig2.update_layout(template="plotly_dark")
 st.plotly_chart(fig2, use_container_width=True)
 
