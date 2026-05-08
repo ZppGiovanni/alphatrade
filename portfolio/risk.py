@@ -2,8 +2,9 @@ import pandas as pd
 import numpy as np
 
 
-def backtest(prices: pd.Series, signals: pd.Series,
-             initial_capital: float = 10000.0) -> dict:
+def backtest(
+    prices: pd.Series, signals: pd.Series, initial_capital: float = 10000.0
+) -> dict:
     """
     Simulate a trading strategy on historical data.
 
@@ -18,15 +19,21 @@ def backtest(prices: pd.Series, signals: pd.Series,
     position = 0
     cash = initial_capital
     equity = []
+    n_trades = 0
+    first_trade_price = None
 
     for date, price in prices.items():
         signal = signals.get(date, 0)
         if signal == 1 and position == 0:
+            if first_trade_price is None:
+                first_trade_price = price
             position = cash / price
             cash = 0.0
+            n_trades += 1
         elif signal == -1 and position > 0:
             cash = position * price
             position = 0.0
+            n_trades += 1
         total = cash + position * price
         equity.append({"date": date, "equity": total})
 
@@ -34,13 +41,14 @@ def backtest(prices: pd.Series, signals: pd.Series,
     equity_curve = equity_df["equity"]
 
     total_return = (equity_curve.iloc[-1] / initial_capital) - 1
-    buy_and_hold = (prices.iloc[-1] / prices.iloc[0]) - 1
+    # B&H starts from the first actual trade entry so the comparison is fair
+    bh_start = first_trade_price if first_trade_price is not None else prices.iloc[0]
+    buy_and_hold = (prices.iloc[-1] / bh_start) - 1
     daily_returns = equity_curve.pct_change().dropna()
     sharpe = (daily_returns.mean() / daily_returns.std()) * np.sqrt(252)
     rolling_max = equity_curve.cummax()
     drawdown = (equity_curve - rolling_max) / rolling_max
     max_drawdown = drawdown.min()
-    n_trades = (signals != 0).sum()
 
     return {
         "total_return": total_return,
@@ -54,6 +62,7 @@ def backtest(prices: pd.Series, signals: pd.Series,
 
 if __name__ == "__main__":
     import sys
+
     sys.path.insert(0, ".")
     from data.database import load_ohlcv
     from strategies.momentum import MomentumStrategy
@@ -71,7 +80,7 @@ if __name__ == "__main__":
 
         for strat_name, strategy in [
             ("Momentum", MomentumStrategy({"short_window": 20, "long_window": 50})),
-            ("MeanRev",  MeanReversionStrategy({"window": 20, "z_threshold": 1.5})),
+            ("MeanRev", MeanReversionStrategy({"window": 20, "z_threshold": 1.5})),
         ]:
             signals = strategy.generate_signals(df)
             r = backtest(prices, signals)
