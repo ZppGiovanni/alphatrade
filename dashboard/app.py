@@ -203,11 +203,6 @@ def _section_header(text: str, color: str = None):
     )
 
 
-def _rgba(hex_color: str, alpha: float) -> str:
-    h = hex_color.lstrip("#")
-    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
-    return f"rgba({r},{g},{b},{alpha})"
-
 
 @st.cache_data(ttl=300)
 def _load(ticker: str) -> pd.DataFrame:
@@ -289,8 +284,6 @@ ret_5d = df['return_5d'].iloc[-1]
 rsi = df['rsi'].iloc[-1]
 last_close = df['close'].iloc[-1]
 
-_spark_close = df['close'].tail(7)
-_spark_ret   = df['return_1d'].tail(7)
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -305,18 +298,6 @@ with col1:
         f'</div>',
         unsafe_allow_html=True,
     )
-    _sfig = go.Figure(go.Scatter(
-        x=list(range(len(_spark_close))), y=_spark_close.values,
-        mode="lines", line=dict(color=_close_color, width=1.8),
-        fill="tozeroy", fillcolor=_rgba(_close_color, 0.15),
-    ))
-    _sfig.update_layout(
-        height=52, margin=dict(l=0, r=0, t=0, b=0),
-        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        showlegend=False,
-        xaxis=dict(visible=False), yaxis=dict(visible=False),
-    )
-    st.plotly_chart(_sfig, width="stretch")
 
 # RSI — custom HTML card
 _rsi_color = C["red"] if rsi > 70 else (C["green"] if rsi < 30 else C["grey"])
@@ -343,18 +324,6 @@ with col3:
         f'</div>',
         unsafe_allow_html=True,
     )
-    _rfig = go.Figure(go.Scatter(
-        x=list(range(len(_spark_ret))), y=_spark_ret.values,
-        mode="lines", line=dict(color=_ret1d_color, width=1.8),
-        fill="tozeroy", fillcolor=_rgba(_ret1d_color, 0.15),
-    ))
-    _rfig.update_layout(
-        height=52, margin=dict(l=0, r=0, t=0, b=0),
-        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        showlegend=False,
-        xaxis=dict(visible=False), yaxis=dict(visible=False),
-    )
-    st.plotly_chart(_rfig, width="stretch")
 
 # 5D Return — custom HTML card
 _ret5d_color = C["green"] if ret_5d >= 0 else C["red"]
