@@ -130,9 +130,8 @@ html, body, [class*="css"], [data-testid], .stMarkdown, .stText,
 .stSpinner > div { border-top-color: #4FC3F7 !important; }
 hr { border-color: #0f3460 !important; }
 
-/* Sidebar collapse/expand button */
-[data-testid="stSidebarCollapseButton"] button,
-[data-testid="stSidebarCollapsedControl"] button {
+/* Sidebar collapse button (inside open sidebar) */
+[data-testid="stSidebarCollapseButton"] button {
     background: #161b27 !important;
     border: 1px solid #0f3460 !important;
     border-radius: 6px !important;
@@ -140,12 +139,33 @@ hr { border-color: #0f3460 !important; }
     width: 32px !important;
     height: 32px !important;
     padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
     transition: background 0.2s !important;
 }
-[data-testid="stSidebarCollapseButton"] button:hover,
+[data-testid="stSidebarCollapseButton"] button:hover {
+    background: #0f3460 !important;
+}
+
+/* Sidebar expand button (when sidebar is closed) */
+[data-testid="stSidebarCollapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    left: 0.5rem !important;
+    top: 0.5rem !important;
+    z-index: 9999 !important;
+}
+[data-testid="stSidebarCollapsedControl"] button {
+    background: #161b27 !important;
+    border: 1px solid #4FC3F7 !important;
+    border-radius: 8px !important;
+    color: #4FC3F7 !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    box-shadow: 0 2px 8px rgba(79,195,247,0.25) !important;
+    transition: background 0.2s !important;
+}
 [data-testid="stSidebarCollapsedControl"] button:hover {
     background: #0f3460 !important;
 }
