@@ -30,7 +30,8 @@ C = dict(
     purple="#CE93D8", orange="#FF8C00", grey="#9e9e9e",
 )
 
-st.set_page_config(page_title="AlphaTrade", layout="wide")
+st.set_page_config(page_title="AlphaTrade", layout="wide",
+                   initial_sidebar_state="expanded")
 
 # ── Global CSS ────────────────────────────────────────────────────
 st.markdown("""
@@ -129,9 +130,11 @@ html, body, [class*="css"], [data-testid], .stMarkdown, .stText,
 .stSpinner > div { border-top-color: #4FC3F7 !important; }
 hr { border-color: #0f3460 !important; }
 
-/* Hide sidebar collapse button */
+/* Hide sidebar collapse / expand controls */
 [data-testid="stSidebarCollapseButton"],
-[data-testid="collapsedControl"] { display: none !important; }
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"],
+button[kind="header"] { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
