@@ -33,6 +33,9 @@ C = dict(
 st.set_page_config(page_title="AlphaTrade", layout="wide",
                    initial_sidebar_state="expanded")
 
+if "sidebar_open" not in st.session_state:
+    st.session_state.sidebar_open = True
+
 # ── Global CSS ────────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -130,44 +133,36 @@ html, body, [class*="css"], [data-testid], .stMarkdown, .stText,
 .stSpinner > div { border-top-color: #4FC3F7 !important; }
 hr { border-color: #0f3460 !important; }
 
-/* Sidebar collapse button (inside open sidebar) */
-[data-testid="stSidebarCollapseButton"] button {
+/* Hide native sidebar collapse controls */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapsedControl"] { display: none !important; }
+
+/* Fixed sidebar toggle button */
+#sb-toggle-wrap {
+    position: fixed;
+    top: 50vh;
+    transform: translateY(-50%);
+    z-index: 9999;
+    transition: left 0.3s ease;
+}
+#sb-toggle-wrap button {
     background: #161b27 !important;
     border: 1px solid #0f3460 !important;
-    border-radius: 6px !important;
+    border-left: none !important;
+    border-radius: 0 8px 8px 0 !important;
     color: #4FC3F7 !important;
-    width: 32px !important;
-    height: 32px !important;
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 52px !important;
     padding: 0 !important;
+    font-size: 0.75rem !important;
+    cursor: pointer;
+    box-shadow: 3px 0 8px rgba(0,0,0,0.5) !important;
     transition: background 0.2s !important;
 }
-[data-testid="stSidebarCollapseButton"] button:hover {
+#sb-toggle-wrap button:hover {
     background: #0f3460 !important;
-}
-
-/* Sidebar expand button (when sidebar is closed) */
-[data-testid="stSidebarCollapsedControl"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: fixed !important;
-    left: 0.5rem !important;
-    top: 0.5rem !important;
-    z-index: 9999 !important;
-}
-[data-testid="stSidebarCollapsedControl"] button {
-    background: #161b27 !important;
-    border: 1px solid #4FC3F7 !important;
-    border-radius: 8px !important;
-    color: #4FC3F7 !important;
-    width: 36px !important;
-    height: 36px !important;
-    padding: 0 !important;
-    box-shadow: 0 2px 8px rgba(79,195,247,0.25) !important;
-    transition: background 0.2s !important;
-}
-[data-testid="stSidebarCollapsedControl"] button:hover {
-    background: #0f3460 !important;
+    color: #e0e0e0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -365,15 +360,30 @@ with st.sidebar:
     </p>""")
 
 
+# ── Sidebar visibility ────────────────────────────────────────────
+if not st.session_state.sidebar_open:
+    st.markdown("""
+    <style>
+    [data-testid="stSidebar"] { display: none !important; }
+    </style>""", unsafe_allow_html=True)
+
 # ── Header ────────────────────────────────────────────────────────
-st.html(f"""
-<div style="padding-bottom:0.8rem">
-    <h1 class="animated-title">AlphaTrade</h1>
-    <p style="color:{C['grey']};font-size:0.9rem;margin:6px 0 0">
-        Algorithmic ETF Trading System &nbsp;·&nbsp;
-        USI Programming in Finance II, 2026
-    </p>
-</div>""")
+_h, _b = st.columns([11, 1])
+with _h:
+    st.html(f"""
+    <div style="padding-bottom:0.8rem">
+        <h1 class="animated-title">AlphaTrade</h1>
+        <p style="color:{C['grey']};font-size:0.9rem;margin:6px 0 0">
+            Algorithmic ETF Trading System &nbsp;·&nbsp;
+            USI Programming in Finance II, 2026
+        </p>
+    </div>""")
+with _b:
+    st.html("<div style='height:1.2rem'></div>")
+    if st.button("❯" if not st.session_state.sidebar_open else "❮", key="sb_toggle",
+                 help="Apri/chiudi sidebar"):
+        st.session_state.sidebar_open = not st.session_state.sidebar_open
+        st.rerun()
 st.divider()
 
 
