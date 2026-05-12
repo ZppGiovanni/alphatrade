@@ -239,7 +239,7 @@ def _portfolio_weights():
 # ── Sidebar: controls ─────────────────────────────────────────────
 with st.sidebar:
     st.html(f"""
-    <div style="padding:0.5rem 0 1rem">
+    <div style="padding:0.5rem 0 1rem;font-family:'Inter',sans-serif">
         <h2 style="color:{C['blue']};margin:0;font-size:1.4rem;font-weight:800">
             AlphaTrade
         </h2>
@@ -249,13 +249,13 @@ with st.sidebar:
     </div>""")
     st.divider()
     st.html(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
-            f'letter-spacing:0.05em;margin-bottom:4px">Asset</p>')
+            f'letter-spacing:0.05em;margin-bottom:4px;font-family:Inter,sans-serif">Asset</p>')
     selected = st.selectbox("Asset", ASSETS, label_visibility="collapsed")
     st.html(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
-            f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Strategy</p>')
+            f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px;font-family:Inter,sans-serif">Strategy</p>')
     strategy_name = st.selectbox("Strategy", STRATEGIES, label_visibility="collapsed")
     st.html(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
-            f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Period</p>')
+            f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px;font-family:Inter,sans-serif">Period</p>')
     PERIODS = {"1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "5Y": 1260}
     period_label = st.selectbox("Period", list(PERIODS.keys()),
                                 index=3, label_visibility="collapsed")
@@ -293,7 +293,7 @@ with st.sidebar:
     st.divider()
     st.html(f"""
     <div style="background:{C['surface']};border:1px solid {C['border']};
-                border-radius:10px;padding:1rem 1.1rem">
+                border-radius:10px;padding:1rem 1.1rem;font-family:'Inter',sans-serif">
         <p style="color:{C['grey']};font-size:0.72rem;text-transform:uppercase;
                   letter-spacing:0.08em;margin:0 0 10px">{selected} — Quick Stats</p>
         <div style="display:flex;justify-content:space-between;margin-bottom:7px">
