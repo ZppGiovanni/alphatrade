@@ -128,6 +128,14 @@ html, body, [class*="css"], [data-testid], .stMarkdown, .stText,
 }
 .stSpinner > div { border-top-color: #4FC3F7 !important; }
 hr { border-color: #0f3460 !important; }
+
+/* Fixed top-right popover button */
+[data-testid="stPopover"] {
+    position: fixed !important;
+    top: 0.75rem !important;
+    right: 1rem !important;
+    z-index: 9999 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -322,42 +330,39 @@ with st.sidebar:
 
 
 # ── Header ────────────────────────────────────────────────────────
-_hcol, _bcol = st.columns([9, 1])
-with _hcol:
-    st.html(f"""
-    <div style="padding-bottom:0.8rem">
-        <h1 class="animated-title">AlphaTrade</h1>
-        <p style="color:{C['grey']};font-size:0.9rem;margin:6px 0 0">
-            Algorithmic ETF Trading System &nbsp;·&nbsp;
-            USI Programming in Finance II, 2026
-        </p>
-    </div>""")
-with _bcol:
-    st.html("<div style='height:1.1rem'></div>")
-    with st.popover("☰", help="Select asset, strategy and period"):
-        st.markdown(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
-                    f'letter-spacing:0.05em;margin-bottom:4px">Asset</p>',
-                    unsafe_allow_html=True)
-        sel = st.selectbox("Asset", ASSETS,
-                           index=ASSETS.index(st.session_state.selected),
-                           label_visibility="collapsed", key="pop_asset")
-        st.markdown(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
-                    f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Strategy</p>',
-                    unsafe_allow_html=True)
-        strat = st.selectbox("Strategy", STRATEGIES,
-                             index=STRATEGIES.index(st.session_state.strategy_name),
-                             label_visibility="collapsed", key="pop_strategy")
-        st.markdown(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
-                    f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Period</p>',
-                    unsafe_allow_html=True)
-        per = st.selectbox("Period", list(PERIODS.keys()),
-                           index=list(PERIODS.keys()).index(st.session_state.period_label),
-                           label_visibility="collapsed", key="pop_period")
-        if st.button("Apply", use_container_width=True):
-            st.session_state.selected      = sel
-            st.session_state.strategy_name = strat
-            st.session_state.period_label  = per
-            st.rerun()
+st.html(f"""
+<div style="padding-bottom:0.8rem">
+    <h1 class="animated-title">AlphaTrade</h1>
+    <p style="color:{C['grey']};font-size:0.9rem;margin:6px 0 0">
+        Algorithmic ETF Trading System &nbsp;·&nbsp;
+        USI Programming in Finance II, 2026
+    </p>
+</div>""")
+
+with st.popover("☰", help="Select asset, strategy and period"):
+    st.markdown(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
+                f'letter-spacing:0.05em;margin-bottom:4px">Asset</p>',
+                unsafe_allow_html=True)
+    sel = st.selectbox("Asset", ASSETS,
+                       index=ASSETS.index(st.session_state.selected),
+                       label_visibility="collapsed", key="pop_asset")
+    st.markdown(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
+                f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Strategy</p>',
+                unsafe_allow_html=True)
+    strat = st.selectbox("Strategy", STRATEGIES,
+                         index=STRATEGIES.index(st.session_state.strategy_name),
+                         label_visibility="collapsed", key="pop_strategy")
+    st.markdown(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
+                f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Period</p>',
+                unsafe_allow_html=True)
+    per = st.selectbox("Period", list(PERIODS.keys()),
+                       index=list(PERIODS.keys()).index(st.session_state.period_label),
+                       label_visibility="collapsed", key="pop_period")
+    if st.button("Apply", use_container_width=True):
+        st.session_state.selected      = sel
+        st.session_state.strategy_name = strat
+        st.session_state.period_label  = per
+        st.rerun()
 st.divider()
 
 
