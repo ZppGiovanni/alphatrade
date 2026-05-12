@@ -296,7 +296,7 @@ PERIODS = {"1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "5Y": 1260}
 with st.sidebar:
     st.html(f"""
     <div style="padding:0.5rem 0 1rem;font-family:'Inter',sans-serif">
-        <h2 style="color:{C['blue']};margin:0;font-size:1.4rem;font-weight:800">
+        <h2 class="animated-title" style="margin:0;font-size:1.4rem;font-weight:800">
             AlphaTrade
         </h2>
         <p style="color:{C['grey']};font-size:0.78rem;margin:4px 0 0">
