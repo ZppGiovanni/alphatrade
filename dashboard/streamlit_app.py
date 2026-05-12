@@ -33,6 +33,9 @@ C = dict(
 st.set_page_config(page_title="AlphaTrade", layout="wide",
                    initial_sidebar_state="expanded")
 
+if "sidebar_open" not in st.session_state:
+    st.session_state.sidebar_open = True
+
 # ── Global CSS ────────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -331,15 +334,31 @@ with st.sidebar:
     </p>""")
 
 
+# ── Sidebar visibility ────────────────────────────────────────────
+if not st.session_state.sidebar_open:
+    st.markdown("""
+    <style>
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarCollapsedControl"] { display: none !important; }
+    </style>""", unsafe_allow_html=True)
+
 # ── Header ────────────────────────────────────────────────────────
-st.html(f"""
-<div style="padding-bottom:0.8rem">
-    <h1 class="animated-title">AlphaTrade</h1>
-    <p style="color:{C['grey']};font-size:0.9rem;margin:6px 0 0">
-        Algorithmic ETF Trading System &nbsp;·&nbsp;
-        USI Programming in Finance II, 2026
-    </p>
-</div>""")
+_h, _b = st.columns([11, 1])
+with _h:
+    st.html(f"""
+    <div style="padding-bottom:0.8rem">
+        <h1 class="animated-title">AlphaTrade</h1>
+        <p style="color:{C['grey']};font-size:0.9rem;margin:6px 0 0">
+            Algorithmic ETF Trading System &nbsp;·&nbsp;
+            USI Programming in Finance II, 2026
+        </p>
+    </div>""")
+with _b:
+    st.html("<div style='height:1rem'></div>")
+    if st.button("☰" if not st.session_state.sidebar_open else "✕",
+                 key="sb_toggle"):
+        st.session_state.sidebar_open = not st.session_state.sidebar_open
+        st.rerun()
 st.divider()
 
 
