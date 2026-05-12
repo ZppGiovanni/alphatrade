@@ -9,7 +9,8 @@ import streamlit as st
 from dotenv import load_dotenv
 from groq import Groq
 
-from data.database import load_ohlcv
+from data.database import load_ohlcv, DB_PATH
+from data.fetcher import fetch_all
 from data.normalizer import add_indicators
 from strategies.mean_reversion import MeanReversionStrategy
 from strategies.momentum import MomentumStrategy
@@ -19,6 +20,10 @@ from portfolio.optimizer import compute_weights
 from portfolio.risk import backtest
 
 load_dotenv()
+
+if not DB_PATH.exists():
+    with st.spinner("First run: downloading market data (this takes ~30 seconds)…"):
+        fetch_all()
 
 ASSETS     = ["QQQ", "XLE", "GLD", "XLV", "ARKK"]
 STRATEGIES = ["Momentum", "Mean Reversion", "MACD Crossover", "ML Model"]
