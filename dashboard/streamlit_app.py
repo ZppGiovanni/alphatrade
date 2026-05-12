@@ -130,39 +130,24 @@ html, body, [class*="css"], [data-testid], .stMarkdown, .stText,
 .stSpinner > div { border-top-color: #4FC3F7 !important; }
 hr { border-color: #0f3460 !important; }
 
-/* Sidebar collapse/expand tab */
-[data-testid="stSidebarCollapseButton"] {
-    position: absolute !important;
-    right: -28px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    z-index: 9999 !important;
-}
+/* Sidebar collapse/expand button */
 [data-testid="stSidebarCollapseButton"] button,
 [data-testid="stSidebarCollapsedControl"] button {
     background: #161b27 !important;
     border: 1px solid #0f3460 !important;
-    border-left: none !important;
-    border-radius: 0 8px 8px 0 !important;
-    width: 22px !important;
-    min-width: 22px !important;
-    height: 52px !important;
-    padding: 0 !important;
+    border-radius: 6px !important;
     color: #4FC3F7 !important;
-    box-shadow: 3px 0 8px rgba(0,0,0,0.4) !important;
-    transition: background 0.2s, color 0.2s !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.2s !important;
 }
 [data-testid="stSidebarCollapseButton"] button:hover,
 [data-testid="stSidebarCollapsedControl"] button:hover {
     background: #0f3460 !important;
-    color: #e0e0e0 !important;
-}
-[data-testid="stSidebarCollapsedControl"] {
-    position: fixed !important;
-    left: 0 !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    z-index: 9999 !important;
 }
 </style>
 """, unsafe_allow_html=True)
