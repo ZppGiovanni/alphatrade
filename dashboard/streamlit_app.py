@@ -254,12 +254,19 @@ with st.sidebar:
     st.html(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
             f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Strategy</p>')
     strategy_name = st.selectbox("Strategy", STRATEGIES, label_visibility="collapsed")
+    st.html(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
+            f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Period</p>')
+    PERIODS = {"1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "5Y": 1260}
+    period_label = st.selectbox("Period", list(PERIODS.keys()),
+                                index=3, label_visibility="collapsed")
 
 
 # ── Load data once ────────────────────────────────────────────────
-df      = load_ohlcv(selected)
-df      = add_indicators(df)
-signals = _get_strategy(strategy_name).generate_signals(df)
+df_full  = load_ohlcv(selected)
+df_full  = add_indicators(df_full)
+n_bars   = PERIODS[period_label]
+df       = df_full.iloc[-n_bars:].copy()
+signals  = _get_strategy(strategy_name).generate_signals(df)
 
 # Pre-compute all metrics used across tabs and sidebar
 close   = df["close"].iloc[-1]
