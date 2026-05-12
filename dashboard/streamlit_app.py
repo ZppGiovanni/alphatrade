@@ -361,7 +361,7 @@ with tab1:
         C["green"] if ret_5d >= 0 else C["red"],
         C["green"] if ret_5d >= 0 else C["red"]))
 
-    st.html("<div style='margin-top:1rem'></div>")
+    st.html("<div style='margin-top:2rem'></div>")
 
     fig = make_subplots(rows=3, cols=1, shared_xaxes=True,
         row_heights=[0.58, 0.18, 0.24], vertical_spacing=0.03,
