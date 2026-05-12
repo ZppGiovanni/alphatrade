@@ -27,8 +27,10 @@ class MeanReversionStrategy(Strategy):
 
 if __name__ == "__main__":
     import sys
+
     sys.path.insert(0, ".")
     from data.database import load_ohlcv
+
     df = load_ohlcv("QQQ")
     strategy = MeanReversionStrategy(params={"window": 20, "z_threshold": 1.5})
     signals = strategy.generate_signals(df)

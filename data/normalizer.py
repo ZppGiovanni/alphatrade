@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     close = df["close"]
 
@@ -22,7 +23,7 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df["macd_signal"] = df["macd"].ewm(span=9).mean()
 
     # Bollinger Bands
-    sma20 = close.rolling(20).mean()
+    sma20 = df["sma_20"]
     std20 = close.rolling(20).std()
     df["bb_upper"] = sma20 + 2 * std20
     df["bb_lower"] = sma20 - 2 * std20
@@ -33,10 +34,13 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 if __name__ == "__main__":
     import sys
+
     sys.path.insert(0, ".")
     from data.database import load_ohlcv
+
     df = load_ohlcv("QQQ")
     df = add_indicators(df)
     print(df.tail())

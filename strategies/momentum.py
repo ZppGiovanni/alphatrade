@@ -26,8 +26,10 @@ class MomentumStrategy(Strategy):
 
 if __name__ == "__main__":
     import sys
+
     sys.path.insert(0, ".")
     from data.database import load_ohlcv
+
     df = load_ohlcv("QQQ")
     strategy = MomentumStrategy(params={"short_window": 20, "long_window": 50})
     signals = strategy.generate_signals(df)

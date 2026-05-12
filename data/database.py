@@ -1,9 +1,12 @@
 """
 database.py — SQLite helpers for AlphaTrade.
 """
+
 import sqlite3
 import logging
 import argparse
+from contextlib import closing
+from functools import lru_cache
 from pathlib import Path
 import pandas as pd
 
@@ -38,33 +41,50 @@ CREATE TABLE IF NOT EXISTS portfolio_weights (
 );
 """
 
+
 def get_connection() -> sqlite3.Connection:
     return sqlite3.connect(DB_PATH)
 
+
 def init_db() -> None:
-    conn = get_connection()
-    conn.executescript(SCHEMA)
-    conn.commit()
-    conn.close()
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        conn.executescript(SCHEMA)
+        conn.commit()
     logger.info("Database initialised at %s", DB_PATH)
 
-def save_ohlcv(df: pd.DataFrame) -> None:
-    conn = get_connection()
-    df.to_sql("ohlcv", conn, if_exists="append", index=True)
-    conn.close()
 
-def load_ohlcv(ticker: str, start: str | None = None, end: str | None = None) -> pd.DataFrame:
-    conn = get_connection()
+def _insert_or_ignore(table, conn, keys, data_iter):
+    placeholders = ", ".join(["?"] * len(keys))
+    cols = ", ".join(keys)
+    sql = f"INSERT OR IGNORE INTO {table.name} ({cols}) VALUES ({placeholders})"
+    conn.executemany(sql, list(data_iter))
+
+
+def save_ohlcv(df: pd.DataFrame) -> None:
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        df.to_sql("ohlcv", conn, if_exists="append", index=True, method=_insert_or_ignore)
+
+
+@lru_cache(maxsize=32)
+def _load_ohlcv_cached(ticker: str, start: str | None, end: str | None) -> pd.DataFrame:
     query = "SELECT * FROM ohlcv WHERE ticker = ?"
     params: list = [ticker]
     if start:
-        query += " AND timestamp >= ?"; params.append(start)
+        query += " AND timestamp >= ?"
+        params.append(start)
     if end:
-        query += " AND timestamp <= ?"; params.append(end)
+        query += " AND timestamp <= ?"
+        params.append(end)
     query += " ORDER BY timestamp ASC"
-    df = pd.read_sql_query(query, conn, params=params, index_col="timestamp")
-    conn.close()
-    return df
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        return pd.read_sql_query(query, conn, params=params, index_col="timestamp")
+
+
+def load_ohlcv(
+    ticker: str, start: str | None = None, end: str | None = None
+) -> pd.DataFrame:
+    return _load_ohlcv_cached(ticker, start, end).copy()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -18,8 +18,7 @@ class MLStrategy(Strategy):
     def __init__(self, params: dict):
         super().__init__(params)
         self.model = RandomForestClassifier(
-            n_estimators=params.get("n_estimators", 100),
-            random_state=42
+            n_estimators=params.get("n_estimators", 100), random_state=42
         )
         self.scaler = StandardScaler()
         self.is_fitted = False
@@ -68,11 +67,15 @@ class MLStrategy(Strategy):
 
 if __name__ == "__main__":
     import sys
+
     sys.path.insert(0, ".")
     from data.database import load_ohlcv
+
     df = load_ohlcv("QQQ")
     strategy = MLStrategy(params={"n_estimators": 100, "threshold": 0.6})
     signals = strategy.generate_signals(df)
     print(signals.value_counts())
-    print(f"Accuracy proxy: {(signals != 0).sum()} confident predictions out of {len(signals)}")
+    print(
+        f"Accuracy proxy: {(signals != 0).sum()} confident predictions out of {len(signals)}"
+    )
     print("ML strategy OK!")

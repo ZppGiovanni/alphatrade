@@ -2,6 +2,7 @@
 base.py — Abstract base class for all AlphaTrade strategies.
 All strategies must inherit from this class and implement generate_signals().
 """
+
 from abc import ABC, abstractmethod
 import pandas as pd
 
