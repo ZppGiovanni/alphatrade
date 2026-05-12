@@ -32,9 +32,6 @@ C = dict(
 
 st.set_page_config(page_title="AlphaTrade", layout="wide")
 
-if "sidebar_open" not in st.session_state:
-    st.session_state.sidebar_open = True
-
 # ── Global CSS ────────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -239,7 +236,16 @@ def _portfolio_weights():
     return compute_weights(prices)
 
 
-# ── Sidebar: controls ─────────────────────────────────────────────
+# ── Controls (defined early so data loading can use them) ─────────
+PERIODS = {"1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "5Y": 1260}
+if "selected"      not in st.session_state: st.session_state.selected      = ASSETS[0]
+if "strategy_name" not in st.session_state: st.session_state.strategy_name = STRATEGIES[0]
+if "period_label"  not in st.session_state: st.session_state.period_label  = "1Y"
+selected      = st.session_state.selected
+strategy_name = st.session_state.strategy_name
+period_label  = st.session_state.period_label
+
+# Sidebar: branding only
 with st.sidebar:
     st.html(f"""
     <div style="padding:0.5rem 0 1rem;font-family:'Inter',sans-serif">
@@ -250,18 +256,6 @@ with st.sidebar:
             Algorithmic Trading System
         </p>
     </div>""")
-    st.divider()
-    st.html(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
-            f'letter-spacing:0.05em;margin-bottom:4px;font-family:Inter,sans-serif">Asset</p>')
-    selected = st.selectbox("Asset", ASSETS, label_visibility="collapsed")
-    st.html(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
-            f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px;font-family:Inter,sans-serif">Strategy</p>')
-    strategy_name = st.selectbox("Strategy", STRATEGIES, label_visibility="collapsed")
-    st.html(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
-            f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px;font-family:Inter,sans-serif">Period</p>')
-    PERIODS = {"1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "5Y": 1260}
-    period_label = st.selectbox("Period", list(PERIODS.keys()),
-                                index=3, label_visibility="collapsed")
 
 
 # ── Load data once ────────────────────────────────────────────────
@@ -327,17 +321,8 @@ with st.sidebar:
     </p>""")
 
 
-# ── Sidebar toggle CSS ────────────────────────────────────────────
-if not st.session_state.sidebar_open:
-    st.markdown("""
-    <style>
-    [data-testid="stSidebar"],
-    [data-testid="stSidebarCollapsedControl"] { display: none !important; }
-    </style>
-    """, unsafe_allow_html=True)
-
 # ── Header ────────────────────────────────────────────────────────
-_hcol, _bcol = st.columns([10, 1])
+_hcol, _bcol = st.columns([9, 1])
 with _hcol:
     st.html(f"""
     <div style="padding-bottom:0.8rem">
@@ -348,11 +333,31 @@ with _hcol:
         </p>
     </div>""")
 with _bcol:
-    st.html("<div style='height:0.6rem'></div>")
-    icon = "✕" if st.session_state.sidebar_open else "☰"
-    if st.button(icon, key="sidebar_toggle", help="Toggle sidebar"):
-        st.session_state.sidebar_open = not st.session_state.sidebar_open
-        st.rerun()
+    st.html("<div style='height:1.1rem'></div>")
+    with st.popover("☰", help="Select asset, strategy and period"):
+        st.markdown(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
+                    f'letter-spacing:0.05em;margin-bottom:4px">Asset</p>',
+                    unsafe_allow_html=True)
+        sel = st.selectbox("Asset", ASSETS,
+                           index=ASSETS.index(st.session_state.selected),
+                           label_visibility="collapsed", key="pop_asset")
+        st.markdown(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
+                    f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Strategy</p>',
+                    unsafe_allow_html=True)
+        strat = st.selectbox("Strategy", STRATEGIES,
+                             index=STRATEGIES.index(st.session_state.strategy_name),
+                             label_visibility="collapsed", key="pop_strategy")
+        st.markdown(f'<p style="color:{C["grey"]};font-size:0.8rem;text-transform:uppercase;'
+                    f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px">Period</p>',
+                    unsafe_allow_html=True)
+        per = st.selectbox("Period", list(PERIODS.keys()),
+                           index=list(PERIODS.keys()).index(st.session_state.period_label),
+                           label_visibility="collapsed", key="pop_period")
+        if st.button("Apply", use_container_width=True):
+            st.session_state.selected      = sel
+            st.session_state.strategy_name = strat
+            st.session_state.period_label  = per
+            st.rerun()
 st.divider()
 
 
