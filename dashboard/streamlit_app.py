@@ -130,10 +130,8 @@ html, body, [class*="css"], [data-testid], .stMarkdown, .stText,
 .stSpinner > div { border-top-color: #4FC3F7 !important; }
 hr { border-color: #0f3460 !important; }
 
-/* Sidebar always visible — hide all collapse/expand controls */
-[data-testid="stSidebarCollapseButton"],
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="collapsedControl"] { display: none !important; }
+/* Keep sidebar always expanded */
+[data-testid="stSidebarCollapseButton"] { visibility: hidden !important; }
 
 /* Fixed sidebar toggle button */
 #sb-toggle-wrap {
