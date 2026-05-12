@@ -481,7 +481,31 @@ with tab4:
     col_l, col_r = st.columns(2)
     with col_l:
         _section("Performance Table")
-        st.dataframe(pd.DataFrame(rows_cmp), hide_index=True, width="stretch")
+        def _perf_table(rows):
+            cols = list(rows[0].keys())
+            header = "".join(
+                f'<th style="color:{C["grey"]};font-size:0.72rem;text-transform:uppercase;'
+                f'letter-spacing:0.07em;padding:8px 12px;text-align:{"left" if i==0 else "right"};'
+                f'border-bottom:1px solid {C["border"]};font-weight:500">{c}</th>'
+                for i, c in enumerate(cols))
+            rows_html = ""
+            for r in rows:
+                cells = ""
+                for i, (k, v) in enumerate(r.items()):
+                    color = "#e0e0e0"
+                    if k in ("Return", "B&H") and isinstance(v, str):
+                        color = C["green"] if v.startswith("+") else C["red"]
+                    align = "left" if i == 0 else "right"
+                    cells += (f'<td style="color:{color};font-size:0.86rem;'
+                              f'padding:9px 12px;text-align:{align};'
+                              f'border-bottom:1px solid {C["grid"]}">{v}</td>')
+                rows_html += f"<tr>{cells}</tr>"
+            return (f'<table style="width:100%;border-collapse:collapse;'
+                    f'font-family:Inter,sans-serif;background:{C["surface"]};'
+                    f'border:1px solid {C["border"]};border-radius:8px;overflow:hidden">'
+                    f"<thead><tr>{header}</tr></thead>"
+                    f"<tbody>{rows_html}</tbody></table>")
+        col_l.html(_perf_table(rows_cmp))
     with col_r:
         _section("Return vs B&H")
         bar_colors_cmp = [C["green"] if v >= 0 else C["red"] for v in returns_cmp]
