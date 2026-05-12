@@ -9,11 +9,11 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df["sma_20"] = close.rolling(20).mean()
     df["sma_50"] = close.rolling(50).mean()
 
-    # RSI
+    # RSI — Wilder's smoothing (EWM alpha=1/14, adjust=False)
     delta = close.diff()
-    gain = delta.clip(lower=0).rolling(14).mean()
-    loss = -delta.clip(upper=0).rolling(14).mean()
-    rs = gain / loss
+    avg_gain = delta.clip(lower=0).ewm(com=13, adjust=False).mean()
+    avg_loss = (-delta.clip(upper=0)).ewm(com=13, adjust=False).mean()
+    rs = avg_gain / avg_loss
     df["rsi"] = 100 - (100 / (1 + rs))
 
     # MACD

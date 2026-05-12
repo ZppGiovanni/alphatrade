@@ -20,13 +20,10 @@ def backtest(
     cash = initial_capital
     equity = []
     n_trades = 0
-    first_trade_price = None
 
     for date, price in prices.items():
         signal = signals.get(date, 0)
         if signal == 1 and position == 0:
-            if first_trade_price is None:
-                first_trade_price = price
             position = cash / price
             cash = 0.0
             n_trades += 1
@@ -41,9 +38,7 @@ def backtest(
     equity_curve = equity_df["equity"]
 
     total_return = (equity_curve.iloc[-1] / initial_capital) - 1
-    # B&H starts from the first actual trade entry so the comparison is fair
-    bh_start = first_trade_price if first_trade_price is not None else prices.iloc[0]
-    buy_and_hold = (prices.iloc[-1] / bh_start) - 1
+    buy_and_hold = (prices.iloc[-1] / prices.iloc[0]) - 1
     daily_returns = equity_curve.pct_change().dropna()
     sharpe = (daily_returns.mean() / daily_returns.std()) * np.sqrt(252)
     rolling_max = equity_curve.cummax()

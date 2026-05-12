@@ -316,7 +316,9 @@ df_full  = load_ohlcv(selected)
 df_full  = add_indicators(df_full)
 n_bars   = PERIODS[period_label]
 df       = df_full.iloc[-n_bars:].copy()
-signals  = _get_strategy(strategy_name).generate_signals(df)
+# Compute signals on full history, then slice — avoids warm-up NaNs in
+# rolling windows and spurious crossover signals at the period boundary
+signals  = _get_strategy(strategy_name).generate_signals(df_full).iloc[-n_bars:]
 
 # Pre-compute all metrics used across tabs and sidebar
 close   = df["close"].iloc[-1]
@@ -326,9 +328,9 @@ rsi     = df["rsi"].iloc[-1]
 rsi_lbl = "Overbought" if rsi > 70 else ("Oversold" if rsi < 30 else "Neutral")
 rsi_col = C["red"] if rsi > 70 else (C["green"] if rsi < 30 else C["grey"])
 
-sig_mom   = MomentumStrategy(params={"short_window": 20, "long_window": 50}).generate_signals(df)
-sig_mr    = MeanReversionStrategy(params={"window": 20, "z_threshold": 1.5}).generate_signals(df)
-sig_macd  = MACDCrossoverStrategy(params={}).generate_signals(df)
+sig_mom  = MomentumStrategy(params={"short_window": 20, "long_window": 50}).generate_signals(df_full).iloc[-n_bars:]
+sig_mr   = MeanReversionStrategy(params={"window": 20, "z_threshold": 1.5}).generate_signals(df_full).iloc[-n_bars:]
+sig_macd = MACDCrossoverStrategy(params={}).generate_signals(df_full).iloc[-n_bars:]
 consensus = sig_mom + sig_mr + sig_macd
 latest    = int(consensus.iloc[-1])
 
