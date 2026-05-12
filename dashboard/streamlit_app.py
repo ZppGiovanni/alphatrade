@@ -406,7 +406,8 @@ with tab1:
     fig.add_hline(y=30, line_dash="dash", line_color="rgba(38,166,154,0.5)",   row=3, col=1)
     fig.add_hline(y=50, line_dash="dot",  line_color="rgba(255,255,255,0.12)", row=3, col=1)
     fig.update_layout(**_dark(height=680, xaxis_rangeslider_visible=False,
-                              margin=dict(l=0, r=0, t=55, b=0)))
+                              margin=dict(l=0, r=0, t=70, b=0)))
+    fig.update_annotations(yshift=10)
     _axes(fig)
     _chart(fig)
 
