@@ -362,10 +362,11 @@ with tab1:
         C["green"] if ret_5d >= 0 else C["red"]))
 
     st.html("<div style='margin-top:2rem'></div>")
+    _section(f"{selected} — Candlestick + SMA")
 
     fig = make_subplots(rows=3, cols=1, shared_xaxes=True,
         row_heights=[0.58, 0.18, 0.24], vertical_spacing=0.03,
-        subplot_titles=(f"{selected} — Candlestick + SMA", "Volume", "RSI (14)"))
+        subplot_titles=("", "Volume", "RSI (14)"))
     fig.add_trace(go.Candlestick(
         x=df.index, open=df["open"], high=df["high"], low=df["low"], close=df["close"],
         name="Price",
@@ -406,8 +407,7 @@ with tab1:
     fig.add_hline(y=30, line_dash="dash", line_color="rgba(38,166,154,0.5)",   row=3, col=1)
     fig.add_hline(y=50, line_dash="dot",  line_color="rgba(255,255,255,0.12)", row=3, col=1)
     fig.update_layout(**_dark(height=680, xaxis_rangeslider_visible=False,
-                              margin=dict(l=0, r=0, t=70, b=0)))
-    fig.update_annotations(yshift=10)
+                              margin=dict(l=0, r=0, t=30, b=0)))
     _axes(fig)
     _chart(fig)
 
