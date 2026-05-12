@@ -33,9 +33,6 @@ C = dict(
 st.set_page_config(page_title="AlphaTrade", layout="wide",
                    initial_sidebar_state="expanded")
 
-if "sidebar_open" not in st.session_state:
-    st.session_state.sidebar_open = True
-
 # ── Global CSS ────────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -133,11 +130,40 @@ html, body, [class*="css"], [data-testid], .stMarkdown, .stText,
 .stSpinner > div { border-top-color: #4FC3F7 !important; }
 hr { border-color: #0f3460 !important; }
 
-/* Hide sidebar collapse / expand controls */
-[data-testid="stSidebarCollapseButton"],
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"],
-button[kind="header"] { display: none !important; }
+/* Sidebar collapse/expand tab */
+[data-testid="stSidebarCollapseButton"] {
+    position: absolute !important;
+    right: -28px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 9999 !important;
+}
+[data-testid="stSidebarCollapseButton"] button,
+[data-testid="stSidebarCollapsedControl"] button {
+    background: #161b27 !important;
+    border: 1px solid #0f3460 !important;
+    border-left: none !important;
+    border-radius: 0 8px 8px 0 !important;
+    width: 22px !important;
+    min-width: 22px !important;
+    height: 52px !important;
+    padding: 0 !important;
+    color: #4FC3F7 !important;
+    box-shadow: 3px 0 8px rgba(0,0,0,0.4) !important;
+    transition: background 0.2s, color 0.2s !important;
+}
+[data-testid="stSidebarCollapseButton"] button:hover,
+[data-testid="stSidebarCollapsedControl"] button:hover {
+    background: #0f3460 !important;
+    color: #e0e0e0 !important;
+}
+[data-testid="stSidebarCollapsedControl"] {
+    position: fixed !important;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 9999 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -334,31 +360,15 @@ with st.sidebar:
     </p>""")
 
 
-# ── Sidebar visibility ────────────────────────────────────────────
-if not st.session_state.sidebar_open:
-    st.markdown("""
-    <style>
-    [data-testid="stSidebar"],
-    [data-testid="stSidebarCollapsedControl"] { display: none !important; }
-    </style>""", unsafe_allow_html=True)
-
 # ── Header ────────────────────────────────────────────────────────
-_h, _b = st.columns([11, 1])
-with _h:
-    st.html(f"""
-    <div style="padding-bottom:0.8rem">
-        <h1 class="animated-title">AlphaTrade</h1>
-        <p style="color:{C['grey']};font-size:0.9rem;margin:6px 0 0">
-            Algorithmic ETF Trading System &nbsp;·&nbsp;
-            USI Programming in Finance II, 2026
-        </p>
-    </div>""")
-with _b:
-    st.html("<div style='height:1rem'></div>")
-    if st.button("☰" if not st.session_state.sidebar_open else "✕",
-                 key="sb_toggle"):
-        st.session_state.sidebar_open = not st.session_state.sidebar_open
-        st.rerun()
+st.html(f"""
+<div style="padding-bottom:0.8rem">
+    <h1 class="animated-title">AlphaTrade</h1>
+    <p style="color:{C['grey']};font-size:0.9rem;margin:6px 0 0">
+        Algorithmic ETF Trading System &nbsp;·&nbsp;
+        USI Programming in Finance II, 2026
+    </p>
+</div>""")
 st.divider()
 
 
