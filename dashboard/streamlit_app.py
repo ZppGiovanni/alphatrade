@@ -351,25 +351,25 @@ with st.sidebar:
     st.html(f"""
     <div style="background:{C['surface']};border:1px solid {C['border']};
                 border-radius:10px;padding:1rem 1.1rem;font-family:'Inter',sans-serif">
-        <p style="color:{C['grey']};font-size:0.72rem;text-transform:uppercase;
-                  letter-spacing:0.08em;margin:0 0 10px">{selected} — Quick Stats</p>
-        <div style="display:flex;justify-content:space-between;margin-bottom:7px">
-            <span style="color:{C['grey']};font-size:0.82rem">Last Close</span>
-            <span style="color:#e0e0e0;font-weight:600">${close:.2f}</span>
+        <p style="color:{C['grey']};font-size:0.68rem;text-transform:uppercase;
+                  letter-spacing:0.08em;margin:0 0 8px">{selected} — Quick Stats</p>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <span style="color:{C['grey']};font-size:0.72rem">Last Close</span>
+            <span style="color:#e0e0e0;font-weight:600;font-size:0.72rem">${close:.2f}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:7px">
-            <span style="color:{C['grey']};font-size:0.82rem">1D Return</span>
-            <span style="color:{'#26a69a' if ret_1d >= 0 else '#ef5350'};font-weight:600">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <span style="color:{C['grey']};font-size:0.72rem">1D Return</span>
+            <span style="color:{'#26a69a' if ret_1d >= 0 else '#ef5350'};font-weight:600;font-size:0.72rem">
                 {ret_1d:+.2%}
             </span>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:7px">
-            <span style="color:{C['grey']};font-size:0.82rem">RSI (14)</span>
-            <span style="color:{rsi_col};font-weight:600">{rsi:.1f} · {rsi_lbl}</span>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <span style="color:{C['grey']};font-size:0.72rem">RSI (14)</span>
+            <span style="color:{rsi_col};font-weight:600;font-size:0.72rem">{rsi:.1f} · {rsi_lbl}</span>
         </div>
         <div style="display:flex;justify-content:space-between">
-            <span style="color:{C['grey']};font-size:0.82rem">Consensus</span>
-            <span style="color:{con_color};font-weight:600;font-size:0.8rem">{label}</span>
+            <span style="color:{C['grey']};font-size:0.72rem">Consensus</span>
+            <span style="color:{con_color};font-weight:600;font-size:0.72rem">{label}</span>
         </div>
     </div>
     <br>
