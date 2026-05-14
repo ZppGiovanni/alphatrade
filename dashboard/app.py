@@ -21,6 +21,24 @@ from portfolio.risk import backtest
 
 load_dotenv()
 ASSETS = ["QQQ", "XLE", "GLD", "XLV", "ARKK"]
+# Auto-download data if database is empty
+from data.database import init_db
+from data.fetcher import fetch_all
+import sqlite3
+from pathlib import Path
+
+DB_PATH = Path(__file__).parent.parent / "alphatrade.db"
+
+def _ensure_data():
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    count = conn.execute("SELECT COUNT(*) FROM ohlcv").fetchone()[0]
+    conn.close()
+    if count == 0:
+        with st.spinner("📥 First run — downloading market data (30s)…"):
+            fetch_all(period="5y")
+
+_ensure_data()
 
 # ── Palette ───────────────────────────────────────────────────
 C = {
