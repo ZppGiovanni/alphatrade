@@ -62,3 +62,9 @@ def test_macd_crossover_signals():
 def test_macd_crossover_repr():
     strategy = MACDCrossoverStrategy(params={})
     assert "MACDCrossoverStrategy" in repr(strategy)
+def test_bollinger_bands_signals():
+    from strategies.bollinger_bands import BollingerBandsStrategy
+    df = make_fake_ohlcv()
+    strategy = BollingerBandsStrategy(params={"window": 20, "num_std": 2.0})
+    signals = strategy.generate_signals(df)
+    assert_valid_signals(signals, df)
