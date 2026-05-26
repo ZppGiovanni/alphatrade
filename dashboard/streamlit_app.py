@@ -15,6 +15,7 @@ from data.normalizer import add_indicators
 from strategies.mean_reversion import MeanReversionStrategy
 from strategies.momentum import MomentumStrategy
 from strategies.macd_crossover import MACDCrossoverStrategy
+from strategies.bollinger_bands import BollingerBandsStrategy
 from strategies.ml_model import MLStrategy
 from portfolio.optimizer import compute_weights
 from portfolio.risk import backtest
@@ -26,7 +27,7 @@ if not DB_PATH.exists():
         fetch_all()
 
 ASSETS     = ["QQQ", "XLE", "GLD", "XLV", "ARKK"]
-STRATEGIES = ["Momentum", "Mean Reversion", "MACD Crossover", "ML Model"]
+STRATEGIES = ["Momentum", "Mean Reversion", "MACD Crossover", "Bollinger Bands", "ML Model"]
 COLORS     = ["#4FC3F7", "#26a69a", "#FFB74D", "#CE93D8", "#ef5350"]
 
 C = dict(
@@ -253,6 +254,8 @@ def _get_strategy(name):
         return MeanReversionStrategy(params={"window": 20, "z_threshold": 1.5})
     if name == "MACD Crossover":
         return MACDCrossoverStrategy(params={})
+    if name == "Bollinger Bands":
+        return BollingerBandsStrategy(params={"window": 20, "num_std": 2.0})
     if name == "ML Model":
         return MLStrategy(params={"n_estimators": 100, "threshold": 0.6})
     return MomentumStrategy(params={"short_window": 20, "long_window": 50})
@@ -268,6 +271,7 @@ def _comparison_data(ticker):
         ("Momentum",       MomentumStrategy(params={"short_window": 20, "long_window": 50})),
         ("Mean Reversion", MeanReversionStrategy(params={"window": 20, "z_threshold": 1.5})),
         ("MACD Crossover", MACDCrossoverStrategy(params={})),
+        ("Bollinger Bands", BollingerBandsStrategy(params={"window": 20, "num_std": 2.0})),
     ]:
         sig = strat.generate_signals(df)
         res = backtest(df["close"], sig)
@@ -336,13 +340,14 @@ rsi_col = C["red"] if rsi > 70 else (C["green"] if rsi < 30 else C["grey"])
 sig_mom  = MomentumStrategy(params={"short_window": 20, "long_window": 50}).generate_signals(df_full).iloc[-n_bars:]
 sig_mr   = MeanReversionStrategy(params={"window": 20, "z_threshold": 1.5}).generate_signals(df_full).iloc[-n_bars:]
 sig_macd = MACDCrossoverStrategy(params={}).generate_signals(df_full).iloc[-n_bars:]
-consensus = sig_mom + sig_mr + sig_macd
+sig_bb   = BollingerBandsStrategy(params={"window": 20, "num_std": 2.0}).generate_signals(df_full).iloc[-n_bars:]
+consensus = sig_mom + sig_mr + sig_macd + sig_bb
 latest    = int(consensus.iloc[-1])
 
-if   latest >= 2:  label, con_color = "🟢 STRONG BUY",  C["green"]
-elif latest == 1:  label, con_color = "🟡 WEAK BUY",    C["amber"]
+if   latest >= 3:  label, con_color = "🟢 STRONG BUY",  C["green"]
+elif latest >= 1:  label, con_color = "🟡 WEAK BUY",    C["amber"]
 elif latest == 0:  label, con_color = "⚪ HOLD",         C["grey"]
-elif latest == -1: label, con_color = "🟠 WEAK SELL",   C["orange"]
+elif latest >= -2: label, con_color = "🟠 WEAK SELL",   C["orange"]
 else:              label, con_color = "🔴 STRONG SELL", C["red"]
 
 # Sidebar: quick stats (added after data loads)
@@ -620,11 +625,12 @@ with tab5:
 
 # ── Tab 6: Consensus ──────────────────────────────────────────────
 with tab6:
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5 = st.columns(5)
     c1.html(_kpi("Momentum",        str(int(sig_mom.iloc[-1]))))
     c2.html(_kpi("Mean Reversion",  str(int(sig_mr.iloc[-1]))))
     c3.html(_kpi("MACD Crossover",  str(int(sig_macd.iloc[-1]))))
-    c4.html(_kpi("Consensus Score", str(latest),
+    c4.html(_kpi("Bollinger Bands", str(int(sig_bb.iloc[-1]))))
+    c5.html(_kpi("Consensus Score", str(latest),
                      border_color=con_color))
 
     st.html("<div style='margin-top:1rem'></div>")
@@ -638,8 +644,8 @@ with tab6:
             number={"font": {"color": con_color, "size": 44}},
             gauge={
                 "axis": {
-                    "range": [-3, 3],
-                    "tickvals": [-3, -2, -1, 0, 1, 2, 3],
+                    "range": [-4, 4],
+                    "tickvals": [-4, -3, -2, -1, 0, 1, 2, 3, 4],
                     "tickfont": {"color": C["grey"], "size": 10},
                     "tickcolor": C["border"],
                 },
@@ -648,9 +654,9 @@ with tab6:
                 "borderwidth": 1,
                 "bordercolor": C["border"],
                 "steps": [
-                    {"range": [-3, -1.5], "color": "rgba(239,83,80,0.15)"},
-                    {"range": [-1.5, 1.5], "color": "rgba(158,158,158,0.06)"},
-                    {"range": [1.5, 3],   "color": "rgba(38,166,154,0.15)"},
+                    {"range": [-4, -2], "color": "rgba(239,83,80,0.15)"},
+                    {"range": [-2, 2],  "color": "rgba(158,158,158,0.06)"},
+                    {"range": [2, 4],   "color": "rgba(38,166,154,0.15)"},
                 ],
                 "threshold": {
                     "line": {"color": con_color, "width": 2},
@@ -704,10 +710,11 @@ Market data (last 10 days):
 {recent.to_string()}
 
 Metrics: Close=${df['close'].iloc[-1]:.2f}, RSI={df['rsi'].iloc[-1]:.1f}, 1D={df['return_1d'].iloc[-1]:.2%}, 5D={df['return_5d'].iloc[-1]:.2%}
-Consensus: {latest}/3, Signal: {label}
+Consensus: {latest}/4, Signal: {label}
 Momentum return: {backtest(df['close'], sig_mom)['total_return']:+.1%}
 Mean Reversion return: {backtest(df['close'], sig_mr)['total_return']:+.1%}
 MACD return: {backtest(df['close'], sig_macd)['total_return']:+.1%}
+Bollinger Bands return: {backtest(df['close'], sig_bb)['total_return']:+.1%}
 
 Provide: 1) Market conditions, 2) Signal interpretation, 3) Risk considerations, 4) Outlook. Max 200 words."""
 
