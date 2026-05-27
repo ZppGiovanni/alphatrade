@@ -37,16 +37,16 @@ The core idea is simple: a rules-based system that rotates between growth, value
 
 ## Key Results
 
-Backtest on 2Y daily data (2023–2025). Bull market context: strategies focus on risk-adjusted returns and capital protection over raw alpha.
+Backtest on 2Y daily data (2023–2025), applied to all 5 ETFs. Results below show the best-performing asset for each strategy. Bull market context: strategies focus on risk-adjusted returns and capital protection.
 
-| Asset | Strategy | Return | B&H | Alpha | Sharpe |
-|-------|----------|-------:|----:|------:|-------:|
-| XLE | Bollinger Bands | +125.5% | +156.6% | -31.1% | 0.93 |
-| GLD | Momentum | +77.8% | +137.5% | -59.7% | 0.83 |
-| QQQ | Mean Reversion | +51.5% | +130.8% | -79.3% | 0.56 |
-| ARKK | Momentum | -9.6% | -23.6% | **+14.0%** | 0.05 |
+| Strategy | Best Asset | Return | B&H | Sharpe |
+|----------|-----------|-------:|----:|-------:|
+| Bollinger Bands | XLE | +125.5% | +156.6% | 0.93 |
+| Mean Reversion | XLE | +94.8% | +156.6% | 0.85 |
+| Momentum | GLD | +77.8% | +137.5% | 0.83 |
+| MACD Crossover | XLE | +48.9% | +156.6% | 0.53 |
 
-**Alpha** = Strategy Return − Buy & Hold. ARKK Momentum is the only case that outperforms passive holding — demonstrating downside protection in a bearish asset.
+> Each strategy runs independently on all 5 ETFs. ARKK Momentum (-9.6% vs B&H -23.6%) shows +14% downside protection in bearish conditions.
 
 ---
 
