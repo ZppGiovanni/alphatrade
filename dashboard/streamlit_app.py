@@ -501,8 +501,10 @@ with tab2:
         line=dict(color=C["orange"], width=1.4, dash="dash")), row=1, col=1)
     fig_macd.add_hline(y=0, line_dash="dot",
                        line_color="rgba(255,255,255,0.2)", row=1, col=1)
-    fig_macd.add_trace(go.Bar(x=df.index, y=hist, marker_color=hcol,
-        opacity=0.85, showlegend=False), row=2, col=1)
+    fig_macd.add_trace(go.Scatter(x=df.index, y=hist,
+        line=dict(color=C["blue"], width=1),
+        fill="tozeroy", fillcolor="rgba(79,195,247,0.15)",
+        showlegend=False), row=2, col=1)
     fig_macd.add_hline(y=0, line_dash="dot",
                        line_color="rgba(255,255,255,0.2)", row=2, col=1)
     fig_macd.update_layout(**_dark(height=420))
