@@ -37,17 +37,16 @@ The core idea is simple: a rules-based system that rotates between growth, value
 
 ## Key Results
 
-Results on 2Y daily data (2023–2025). In a strong bull market, strategies prioritize capital protection and risk-adjusted returns over raw performance.
+Backtest on 2Y daily data (2023–2025). Bull market context: strategies focus on risk-adjusted returns and capital protection over raw alpha.
 
-| Asset | Strategy | Return | Buy & Hold | Sharpe |
-|-------|----------|--------|------------|--------|
-| XLE | Bollinger Bands | **+125.5%** | +156.6% | 0.93 |
-| XLE | Mean Reversion | **+94.8%** | +156.6% | 0.85 |
-| GLD | Momentum | **+77.8%** | +137.5% | 0.83 |
-| QQQ | Momentum | **+53.8%** | +130.8% | 0.66 |
-| ARKK | Momentum | **-9.6%** | -23.6% | 0.05 |
+| Asset | Strategy | Return | B&H | Alpha | Sharpe |
+|-------|----------|-------:|----:|------:|-------:|
+| XLE | Bollinger Bands | +125.5% | +156.6% | -31.1% | 0.93 |
+| GLD | Momentum | +77.8% | +137.5% | -59.7% | 0.83 |
+| QQQ | Mean Reversion | +51.5% | +130.8% | -79.3% | 0.56 |
+| ARKK | Momentum | -9.6% | -23.6% | **+14.0%** | 0.05 |
 
-> ARKK Momentum beats Buy & Hold by +14% — strategies show defensive value in bearish assets.
+**Alpha** = Strategy Return − Buy & Hold. ARKK Momentum is the only case that outperforms passive holding — demonstrating downside protection in a bearish asset.
 
 ---
 
