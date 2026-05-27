@@ -597,12 +597,19 @@ with tab4:
             x=[r["Strategy"] for r in rows_cmp],
             y=[v * 100 for v in returns_cmp],
             marker_color=bar_colors_cmp,
-            text=[f"{v:+.1%}" for v in returns_cmp], textposition="outside",
+            text=[f"{v:+.1%}" for v in returns_cmp],
+            textposition="outside",
+            textfont=dict(size=13, color="#e0e0e0"),
         ))
         fig_cmp.add_hline(y=bh_ref * 100, line_dash="dash", line_color=C["amber"],
-                          annotation_text="B&H", annotation_position="top right")
-        fig_cmp.update_layout(**_dark(height=300, showlegend=False,
-            yaxis_title="Return (%)", margin=dict(l=0, r=0, t=30, b=40)))
+                          annotation_text=f"B&H {bh_ref:+.1%}",
+                          annotation_position="top right",
+                          annotation_font=dict(color=C["amber"], size=12))
+        fig_cmp.update_layout(**_dark(height=340, showlegend=False,
+            yaxis_title="Return (%)",
+            xaxis=dict(tickfont=dict(size=12, color="#e0e0e0")),
+            yaxis=dict(tickfont=dict(size=11)),
+            margin=dict(l=0, r=10, t=40, b=10)))
         _axes(fig_cmp)
         _chart(fig_cmp)
 
