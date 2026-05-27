@@ -32,8 +32,8 @@ The core idea is simple: a rules-based system that rotates between growth, value
 
 - **Live market data** — historical OHLCV via yfinance (2Y, 2501 rows)
 - **Technical indicators** — SMA, RSI, MACD, Bollinger Bands (auto-calculated)
-- **4 trading strategies** — Momentum, Mean Reversion, MACD Crossover, ML (Random Forest)
-- **Ensemble signal** — voting system combining all 3 quant strategies (score from -3 to +3)
+- **5 trading strategies** — Momentum, Mean Reversion, MACD Crossover, Bollinger Bands, ML (Random Forest)
+- **Ensemble signal** — voting system combining all 4 quant strategies (score from -4 to +4)
 - **Portfolio optimization** — Markowitz mean-variance, max-Sharpe ratio
 - **Backtesting engine** — equity curve, Sharpe ratio, max drawdown
 - **Web dashboard** — Streamlit with candlestick charts, RSI subplot, interactive signals
@@ -55,8 +55,9 @@ alphatrade/
 │   ├── base.py           # Abstract Strategy interface
 │   ├── mean_reversion.py # Z-score mean reversion
 │   ├── momentum.py       # Dual moving average crossover
-│   ├── macd_crossover.py # MACD signal line crossover
-│   └── ml_model.py       # Random Forest classifier
+│   ├── macd_crossover.py  # MACD signal line crossover
+│   ├── bollinger_bands.py # Bollinger Bands mean reversion — AI agent PR #9
+│   └── ml_model.py        # Random Forest classifier
 ├── portfolio/
 │   ├── optimizer.py      # Markowitz / max-Sharpe optimization
 │   └── risk.py           # Backtesting engine, drawdown, Sharpe
@@ -122,7 +123,7 @@ Once the dashboard is running at `http://localhost:8501`, here is how to use it:
 | Control | Description |
 |---------|-------------|
 | **Asset** | Select one of the 5 ETFs: QQQ, XLE, GLD, XLV, ARKK |
-| **Strategy** | Choose the signal-generation strategy: Momentum, Mean Reversion, MACD Crossover, or ML Model |
+| **Strategy** | Choose the signal-generation strategy: Momentum, Mean Reversion, MACD Crossover, Bollinger Bands, or ML Model |
 | **Period** | Filter the data window: 1M, 3M, 6M, 1Y, 2Y, 5Y |
 
 The **Quick Stats** panel at the bottom of the sidebar always shows the last close price, 1-day return, RSI, and current ensemble signal for the selected asset.
@@ -135,11 +136,11 @@ The **Quick Stats** panel at the bottom of the sidebar always shows the last clo
 
 **Backtest** — Equity curve of the selected strategy vs buy-and-hold, drawdown chart, rolling Sharpe ratio, and rolling volatility. Shows Strategy Return, Buy & Hold return, Sharpe Ratio, and Max Drawdown as KPIs.
 
-**Comparison** — Side-by-side performance table and bar chart for all three quantitative strategies (Momentum, Mean Reversion, MACD Crossover) on the selected asset and period.
+**Comparison** — Side-by-side performance table and bar chart for all four quantitative strategies (Momentum, Mean Reversion, MACD Crossover, Bollinger Bands) on the selected asset and period.
 
 **Portfolio** — Max-Sharpe portfolio weights via Markowitz optimization (donut + bar chart), asset correlation heatmap, and monthly returns heatmap.
 
-**Consensus** — Ensemble signal combining all three quant strategies into a score from -3 (strong sell) to +3 (strong buy). Includes a gauge chart, consensus bar chart over time, and daily returns distribution.
+**Consensus** — Ensemble signal combining all four quant strategies into a score from -4 (strong sell) to +4 (strong buy). Includes a gauge chart, consensus bar chart over time, and daily returns distribution.
 
 **AI Analysis** — Click "Generate AI Analysis" to call the Groq LLaMA 3.3 70B API. The model receives the last 10 days of market data, current indicators, and all strategy results, then returns a professional analysis covering market conditions, signal interpretation, risk considerations, and outlook.
 
@@ -218,6 +219,14 @@ MACD signal line crossover: buy when MACD crosses above signal, sell when it cro
 
 ```python
 MACDCrossoverStrategy(params={})  # uses standard 12/26/9 params
+```
+
+### `strategies/bollinger_bands.py` — BollingerBandsStrategy
+
+Bollinger Bands mean reversion: buy when price crosses below the lower band, sell when it crosses above the upper band. Generated via AI agent (PR #9).
+
+```python
+BollingerBandsStrategy(params={"window": 20, "num_std": 2.0})
 ```
 
 ### `strategies/ml_model.py` — MLStrategy
@@ -323,7 +332,7 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
 | Name | Role | Contribution |
 |------|------|-------------|
-| **Andrea Matteri** | Strategies · AI Agent · Dashboard | MACD Crossover strategy, AI agent PR, dashboard redesign, ensemble signal, AI market analysis |
+| **Andrea Matteri** | Strategies · Dashboard | MACD Crossover strategy, Bollinger Bands dashboard integration, dashboard redesign, ensemble signal, AI market analysis |
 | **Giovanni Zoppis** | Architecture · Data · ML · Backend | Data pipeline, database, strategies, ML model, portfolio optimizer, backtesting engine, dashboard |
 | **Manuela Benfante** | Documentation · Testing | LaTeX report, testing support |
 | **Federico Pizzati** | Documentation · Presentation | LaTeX report, presentation slides |
@@ -332,7 +341,7 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
 ## AI Tools Used
 
-- **Claude (Anthropic)** — architecture design, code generation, MACD Crossover strategy (AI agent PR)
+- **Claude (Anthropic)** — architecture design, code generation, Bollinger Bands strategy (AI agent PR #9)
 - **Groq LLaMA 3.3 70B** — live AI market analysis in the dashboard
 - **GitHub Copilot** — inline code suggestions
 
