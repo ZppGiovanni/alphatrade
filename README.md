@@ -22,6 +22,7 @@
 - [Team](#team)
 - [AI Tools Used](#ai-tools-used)
 - [Academic Documentation](#academic-documentation)
+- [License](#license)
 
 ---
 
@@ -52,7 +53,7 @@ Backtest on 2Y daily data (2023–2025), applied to all 5 ETFs. Results below sh
 
 ## Features
 
-- **Live market data** — historical OHLCV via yfinance (2Y, 2501 rows)
+- **Live market data** — historical OHLCV via yfinance (2Y daily data, auto-refreshed)
 - **Technical indicators** — SMA, RSI, MACD, Bollinger Bands (auto-calculated)
 - **5 trading strategies** — Momentum, Mean Reversion, MACD Crossover, Bollinger Bands, ML (Random Forest)
 - **Ensemble signal** — voting system combining all 4 quant strategies (score from -4 to +4)
@@ -115,15 +116,11 @@ GROQ_API_KEY=your_groq_key
 ```
 
 ```bash
-# 5. Initialize the database
-python data/database.py --init
-
-# 6. Download historical data
-python data/fetcher.py
-
-# 7. Run the dashboard
+# 5. Run the dashboard
 streamlit run dashboard/streamlit_app.py
 ```
+
+> On first run the dashboard automatically initializes the database and downloads 2Y of historical data (~30 seconds).
 
 ---
 
@@ -143,11 +140,11 @@ The **Quick Stats** panel at the bottom of the sidebar always shows the last clo
 
 ### Tabs
 
-**Price & Signals** — Candlestick chart with SMA 20/50, Bollinger Bands, buy/sell markers from the selected strategy, volume bar chart, and RSI subplot. Four KPI cards at the top show last close, RSI, 1D return, and 5D return.
+**Price & Signals** — Candlestick chart with SMA 20/50, Bollinger Bands, buy/sell markers from the selected strategy, volume area chart, and RSI subplot. Four KPI cards at the top show last close, RSI, 1D return, and 5D return.
 
 **MACD** — MACD line vs signal line chart with histogram. Useful for identifying momentum shifts independently from the selected strategy.
 
-**Backtest** — Equity curve of the selected strategy vs buy-and-hold, drawdown chart, rolling Sharpe ratio, and rolling volatility. Shows Strategy Return, Buy & Hold return, Sharpe Ratio, and Max Drawdown as KPIs.
+**Backtest** — Equity curve of the selected strategy vs buy-and-hold and drawdown chart. Shows Strategy Return, Buy & Hold return, Sharpe Ratio, and Max Drawdown as KPIs.
 
 **Comparison** — Side-by-side performance table and bar chart for all four quantitative strategies (Momentum, Mean Reversion, MACD Crossover, Bollinger Bands) on the selected asset and period.
 
@@ -253,7 +250,7 @@ MLStrategy(params={"n_estimators": 100, "threshold": 0.6})
 ### `portfolio/risk.py` — backtest()
 
 ```python
-def backtest(prices: pd.Series, signals: pd.Series, initial_capital: float = 10000) -> dict:
+def backtest(prices: pd.Series, signals: pd.Series, initial_capital: float = 10000, initial_position: int = 0) -> dict:
     """
     Returns
     -------
@@ -366,11 +363,13 @@ All AI-generated code was reviewed, tested, and integrated by the team.
 
 Issues and task tracking: [github.com/ZppGiovanni/alphatrade/issues](https://github.com/ZppGiovanni/alphatrade/issues)
 
+
+
 ---
 
 ## Academic Documentation
 
-PDF report available on iCorsi. Includes project plan, development diary, mathematical background (Markowitz, MACD, RSI, Random Forest), sample results, and lessons learned.
+Technical documentation available in `docs/architecture.md`. Includes system architecture, strategy mathematical background (Markowitz, MACD, RSI, Bollinger Bands, Random Forest), and design decisions.
 
 ---
 
