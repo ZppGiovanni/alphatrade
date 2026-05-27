@@ -8,6 +8,23 @@
 > Final project for **Programming in Finance II** — USI Lugano, 2026
 > Group: Andrea Matteri · Giovanni Zoppis · Manuela Benfante · Federico Pizzati
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Results](#key-results)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [User Guide](#user-guide)
+- [API Documentation](#api-documentation)
+- [Assets](#assets)
+- [Tech Stack](#tech-stack)
+- [Team](#team)
+- [AI Tools Used](#ai-tools-used)
+- [Academic Documentation](#academic-documentation)
+
+---
+
 ## Overview
 
 AlphaTrade is an algorithmic trading system that dynamically allocates across five thematic ETFs using quantitative strategies, portfolio optimization, and machine learning. The system combines rule-based signals with an ensemble voting mechanism and AI-powered market analysis via a Groq LLM.
