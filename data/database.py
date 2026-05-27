@@ -86,6 +86,25 @@ def load_ohlcv(
     return _load_ohlcv_cached(ticker, start, end).copy()
 
 
+def load_live_price(ticker: str) -> float | None:
+    """Return the latest live close price for a ticker, or None if unavailable.
+
+    Args:
+        ticker: ETF ticker symbol.
+
+    Returns:
+        Latest close price from ohlcv_live, or None if no live data exists.
+    """
+    sql = """
+        SELECT close FROM ohlcv_live
+        WHERE ticker = ?
+        ORDER BY timestamp DESC LIMIT 1
+    """
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        row = conn.execute(sql, [ticker]).fetchone()
+    return float(row[0]) if row else None
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--init", action="store_true")
