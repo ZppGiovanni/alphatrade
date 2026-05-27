@@ -543,7 +543,7 @@ with tab3:
     st.html("<div style='margin-top:1rem'></div>")
 
     fig_bt = make_subplots(rows=2, cols=1, shared_xaxes=True,
-        row_heights=[0.65, 0.35], vertical_spacing=0.04,
+        row_heights=[0.65, 0.35], vertical_spacing=0.08,
         subplot_titles=("Portfolio Value ($)", "Drawdown (%)"))
     fig_bt.add_trace(go.Scatter(x=eq.index, y=eq.values, name="Strategy",
         line=dict(color=C["blue"], width=2),
@@ -554,7 +554,14 @@ with tab3:
         line=dict(color=C["red"], width=1.5),
         fill="tozeroy", fillcolor="rgba(239,83,80,0.15)",
         showlegend=False), row=2, col=1)
-    fig_bt.update_layout(**_dark(height=500))
+    fig_bt.update_layout(**_dark(height=540,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02,
+                    font=dict(size=13, color="#e0e0e0")),
+        yaxis=dict(tickfont=dict(size=11), title="Value ($)",
+                   title_font=dict(size=12, color=C["grey"])),
+        yaxis2=dict(tickfont=dict(size=11), tickformat=".1%",
+                    title="Drawdown", title_font=dict(size=12, color=C["grey"])),
+    ))
     _axes(fig_bt)
     _chart(fig_bt)
 
