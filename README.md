@@ -72,7 +72,6 @@ Backtest on 2Y daily data (2023–2025), applied to all 5 ETFs. Results below sh
 | `data/fetcher.py` | Historical OHLCV download via yfinance |
 | `data/normalizer.py` | Data cleaning, validation & technical indicators |
 | `data/database.py` | SQLite read/write helpers |
-| `data/stream.py` | Live market feed via Alpaca WebSocket |
 | `strategies/base.py` | Abstract Strategy interface |
 | `strategies/momentum.py` | Dual SMA crossover (SMA 20/50) |
 | `strategies/mean_reversion.py` | Z-score mean reversion |

@@ -20,7 +20,6 @@ Streamlit dashboard with AI-powered market analysis.
 alphatrade/
 ├── data/
 │   ├── fetcher.py         # yfinance historical download
-│   ├── stream.py          # Alpaca WebSocket live feed
 │   ├── normalizer.py      # cleaning, validation, indicator calc
 │   └── database.py        # SQLite read/write helpers
 ├── strategies/
