@@ -81,7 +81,6 @@ Backtest on 2Y daily data (2023–2025), applied to all 5 ETFs. Results below sh
 | `strategies/ml_model.py` | Random Forest classifier |
 | `portfolio/optimizer.py` | Markowitz mean-variance, max-Sharpe |
 | `portfolio/risk.py` | Backtesting engine, drawdown, Sharpe ratio |
-| `execution/order_manager.py` | Paper trading via Alpaca API |
 | `dashboard/streamlit_app.py` | Streamlit dashboard (entry point) |
 | `tests/test_strategies.py` | Unit tests for all strategies (pytest) |
 | `docs/architecture.md` | System architecture & design decisions |

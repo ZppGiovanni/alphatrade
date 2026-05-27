@@ -33,8 +33,6 @@ alphatrade/
 ├── portfolio/
 │   ├── optimizer.py       # Markowitz / max-Sharpe
 │   └── risk.py            # backtesting engine, drawdown, Sharpe
-├── execution/
-│   └── order_manager.py   # paper trading via Alpaca
 ├── dashboard/
 │   └── streamlit_app.py   # Streamlit dashboard (main)
 ├── tests/
