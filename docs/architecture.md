@@ -17,7 +17,7 @@ Momentum  MeanRev   MACD
 └─────────┼─────────┘
 │
 ▼
-Ensemble Signal (-3 to +3)
+Ensemble Signal (-4 to +4)
 │
 ┌─────────┴─────────┐
 ▼                   ▼
@@ -25,7 +25,7 @@ portfolio/risk.py    portfolio/optimizer.py
 (backtesting)        (Markowitz)
 │
 ▼
-dashboard/app.py
+dashboard/streamlit_app.py
 (Streamlit + Groq AI)
 
 ## Data Layer
@@ -49,21 +49,22 @@ class Strategy(ABC):
 | Momentum | SMA(20) vs SMA(50) crossover | Buy when short > long |
 | Mean Reversion | Z-score of price vs rolling mean | Buy when Z < -1.5 |
 | MACD Crossover | MACD vs Signal line crossover | Buy on bullish cross |
+| Bollinger Bands | Price vs upper/lower bands (20, 2σ) | Buy when price < lower band |
 | ML (Random Forest) | 6 features, 80/20 train/test split | Buy when P(up) > 0.6 |
 
 ## Ensemble Signal
 
-The consensus score sums signals from all 3 quant strategies:
-score = sig_momentum + sig_mean_reversion + sig_macd
-range: [-3, +3]
+The consensus score sums signals from all 4 quant strategies:
+score = sig_momentum + sig_mean_reversion + sig_macd + sig_bollinger
+range: [-4, +4]
 
 | Score | Signal |
 |-------|--------|
-| +2, +3 | STRONG BUY |
-| +1 | WEAK BUY |
+| +3, +4 | STRONG BUY |
+| +1, +2 | WEAK BUY |
 | 0 | HOLD |
-| -1 | WEAK SELL |
-| -2, -3 | STRONG SELL |
+| -1, -2 | WEAK SELL |
+| -3, -4 | STRONG SELL |
 
 ## Portfolio Optimization
 
