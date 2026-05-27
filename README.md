@@ -37,11 +37,17 @@ The core idea is simple: a rules-based system that rotates between growth, value
 
 ## Key Results
 
+Results on 2Y daily data (2023–2025). In a strong bull market, strategies prioritize capital protection and risk-adjusted returns over raw performance.
+
 | Asset | Strategy | Return | Buy & Hold | Sharpe |
 |-------|----------|--------|------------|--------|
-| XLE | Mean Reversion | **+49.4%** | +25.5% | 1.8 |
-| GLD | Momentum | **+63.6%** | +98.9% | 1.29 |
-| QQQ | MACD Crossover | **+31.5%** | +98.9% | 0.92 |
+| XLE | Bollinger Bands | **+125.5%** | +156.6% | 0.93 |
+| XLE | Mean Reversion | **+94.8%** | +156.6% | 0.85 |
+| GLD | Momentum | **+77.8%** | +137.5% | 0.83 |
+| QQQ | Momentum | **+53.8%** | +130.8% | 0.66 |
+| ARKK | Momentum | **-9.6%** | -23.6% | 0.05 |
+
+> ARKK Momentum beats Buy & Hold by +14% — strategies show defensive value in bearish assets.
 
 ---
 
