@@ -496,12 +496,12 @@ with tab2:
     hcol = [C["green"] if v >= 0 else C["red"] for v in hist]
 
     fig_macd = make_subplots(rows=2, cols=1, shared_xaxes=True,
-        row_heights=[0.55, 0.45], vertical_spacing=0.05,
+        row_heights=[0.55, 0.45], vertical_spacing=0.08,
         subplot_titles=("MACD Line & Signal", "Histogram"))
     fig_macd.add_trace(go.Scatter(x=df.index, y=df["macd"], name="MACD",
-        line=dict(color=C["blue"], width=1.8)), row=1, col=1)
+        line=dict(color=C["red"], width=2)), row=1, col=1)
     fig_macd.add_trace(go.Scatter(x=df.index, y=df["macd_signal"], name="Signal",
-        line=dict(color=C["orange"], width=1.4, dash="dash")), row=1, col=1)
+        line=dict(color=C["blue"], width=1.5, dash="dash")), row=1, col=1)
     fig_macd.add_hline(y=0, line_dash="dot",
                        line_color="rgba(255,255,255,0.2)", row=1, col=1)
     fig_macd.add_trace(go.Scatter(x=df.index, y=hist,
@@ -510,7 +510,14 @@ with tab2:
         showlegend=False), row=2, col=1)
     fig_macd.add_hline(y=0, line_dash="dot",
                        line_color="rgba(255,255,255,0.2)", row=2, col=1)
-    fig_macd.update_layout(**_dark(height=420))
+    fig_macd.update_layout(**_dark(height=460,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02,
+                    font=dict(size=13, color="#e0e0e0")),
+        yaxis=dict(tickfont=dict(size=11), title="MACD",
+                   title_font=dict(size=12, color=C["grey"])),
+        yaxis2=dict(tickfont=dict(size=11), title="Histogram",
+                    title_font=dict(size=12, color=C["grey"])),
+    ))
     _axes(fig_macd)
     _chart(fig_macd)
 
