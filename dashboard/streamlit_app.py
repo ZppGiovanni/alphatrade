@@ -263,21 +263,19 @@ def _get_strategy(name):
 
 
 @st.cache_data(ttl=60)
-def _fetch_live_price(ticker: str) -> tuple[float | None, str]:
+def _fetch_live_price(ticker: str) -> float | None:
     """Fetch near-realtime price via yfinance (1-min bar, cached 60s)."""
     import yfinance as yf
     try:
         data = yf.download(ticker, period="1d", interval="1m",
                            auto_adjust=True, progress=False)
         if data.empty:
-            return None, ""
-        if isinstance(data.columns, __import__("pandas").MultiIndex):
+            return None
+        if isinstance(data.columns, pd.MultiIndex):
             data.columns = data.columns.get_level_values(0)
-        price = float(data["Close"].iloc[-1])
-        ts = str(data.index[-1].strftime("%H:%M"))
-        return price, ts
+        return float(data["Close"].iloc[-1])
     except Exception:
-        return None, ""
+        return None
 
 
 # ── Cached heavy computations ─────────────────────────────────────
@@ -364,10 +362,16 @@ df       = df_full.iloc[-n_bars:].copy()
 signals  = _get_strategy(strategy_name).generate_signals(df_full).iloc[-n_bars:]
 
 # Real-time price (1-min yfinance, cached 60s) — also checks Alpaca live table
-_live_px, _live_ts = _fetch_live_price(selected)
+_live_px = _fetch_live_price(selected)
 if _live_px is None:
     _live_px = load_live_price(selected)
-    _live_ts = ""
+
+_live_badge = (
+    f'${_live_px:.2f} <span style="background:#26a69a22;color:#26a69a;'
+    f'font-size:0.6rem;padding:1px 5px;border-radius:4px;font-weight:700">LIVE</span>'
+    if _live_px else "—"
+)
+_live_col = C["green"] if _live_px else C["grey"]
 
 # Pre-compute all metrics used across tabs and sidebar
 close   = df["close"].iloc[-1]
@@ -404,8 +408,8 @@ with st.sidebar:
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:5px">
             <span style="color:{C['grey']};font-size:0.72rem">Live Price</span>
-            <span style="color:{C['green'] if _live_px else C['grey']};font-weight:600;font-size:0.72rem">
-                {"${:.2f} <span style='background:#26a69a22;color:#26a69a;font-size:0.6rem;padding:1px 5px;border-radius:4px;font-weight:700;letter-spacing:0.05em'>LIVE</span>".format(_live_px) if _live_px else "—"}
+            <span style="color:{_live_col};font-weight:600;font-size:0.72rem">
+                {_live_badge}
             </span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:5px">
