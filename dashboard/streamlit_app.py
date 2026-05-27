@@ -285,7 +285,7 @@ def _comparison_data(ticker, n_bars):
     ]:
         full_sig = strat.generate_signals(df)
         sig = full_sig.iloc[-n_bars:]
-        pre = full_sig.iloc[:-n_bars]
+        pre = full_sig.iloc[:-n_bars] if n_bars < len(full_sig) else pd.Series(dtype=int)
         init_pos = int((pre[pre != 0].iloc[-1] if (pre != 0).any() else 0) == 1)
         res = backtest(df["close"].iloc[-n_bars:], sig, initial_position=init_pos)
         if bh_ref is None:
@@ -517,7 +517,7 @@ with tab2:
 
 # ── Tab 3: Backtest ───────────────────────────────────────────────
 with tab3:
-    pre_signals = _get_strategy(strategy_name).generate_signals(df_full).iloc[:-n_bars]
+    pre_signals = _get_strategy(strategy_name).generate_signals(df_full).iloc[:-n_bars] if n_bars < len(df_full) else pd.Series(dtype=int)
     init_pos = int((pre_signals[pre_signals != 0].iloc[-1] if (pre_signals != 0).any() else 0) == 1)
     res = backtest(df["close"], signals, initial_position=init_pos)
     eq  = res["equity_curve"]
