@@ -41,8 +41,7 @@ st.set_page_config(page_title="AlphaTrade", layout="wide",
                    initial_sidebar_state="expanded")
 
 # Force sidebar open regardless of browser localStorage state
-import streamlit.components.v1 as _components
-_components.html("""
+st.iframe("""
 <script>
 (function() {
     function forceOpen() {
