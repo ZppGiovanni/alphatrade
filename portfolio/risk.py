@@ -3,7 +3,8 @@ import numpy as np
 
 
 def backtest(
-    prices: pd.Series, signals: pd.Series, initial_capital: float = 10000.0
+    prices: pd.Series, signals: pd.Series, initial_capital: float = 10000.0,
+    initial_position: int = 0,
 ) -> dict:
     """
     Simulate a trading strategy on historical data.
@@ -12,12 +13,17 @@ def backtest(
         prices:  Close price series indexed by date.
         signals: Signal series (1=buy, -1=sell, 0=hold), same index.
         initial_capital: Starting portfolio value in USD.
+        initial_position: Position held at the start of the window (1=long, 0=flat).
 
     Returns:
         Dictionary with performance metrics and equity curve.
     """
-    position = 0
-    cash = initial_capital
+    if initial_position == 1 and prices.iloc[0] > 0:
+        position = initial_capital / prices.iloc[0]
+        cash = 0.0
+    else:
+        position = 0
+        cash = initial_capital
     equity = []
     n_trades = 0
 

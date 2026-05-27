@@ -283,8 +283,11 @@ def _comparison_data(ticker, n_bars):
         ("MACD Crossover", MACDCrossoverStrategy(params={})),
         ("Bollinger Bands", BollingerBandsStrategy(params={"window": 20, "num_std": 2.0})),
     ]:
-        sig = strat.generate_signals(df).iloc[-n_bars:]
-        res = backtest(df["close"].iloc[-n_bars:], sig)
+        full_sig = strat.generate_signals(df)
+        sig = full_sig.iloc[-n_bars:]
+        pre = full_sig.iloc[:-n_bars]
+        init_pos = int((pre[pre != 0].iloc[-1] if (pre != 0).any() else 0) == 1)
+        res = backtest(df["close"].iloc[-n_bars:], sig, initial_position=init_pos)
         if bh_ref is None:
             bh_ref = res["buy_and_hold"]
         rows.append({
@@ -514,7 +517,9 @@ with tab2:
 
 # ── Tab 3: Backtest ───────────────────────────────────────────────
 with tab3:
-    res = backtest(df["close"], signals)
+    pre_signals = _get_strategy(strategy_name).generate_signals(df_full).iloc[:-n_bars]
+    init_pos = int((pre_signals[pre_signals != 0].iloc[-1] if (pre_signals != 0).any() else 0) == 1)
+    res = backtest(df["close"], signals, initial_position=init_pos)
     eq  = res["equity_curve"]
     bh  = 10000 * (df["close"] / df["close"].iloc[0])
     dd  = (eq - eq.cummax()) / eq.cummax() * 100
