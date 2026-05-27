@@ -3,36 +3,55 @@
 ## System Overview
 
 AlphaTrade is organized as a modular pipeline:
-yfinance API
-│
-▼
-data/fetcher.py ──► SQLite DB ──► data/normalizer.py
-│
-▼
-strategies/ (signals)
-│
-┌─────────┼─────────┐
-▼         ▼         ▼
-Momentum  MeanRev   MACD
-└─────────┼─────────┘
-│
-▼
-Ensemble Signal (-4 to +4)
-│
-┌─────────┴─────────┐
-▼                   ▼
-portfolio/risk.py    portfolio/optimizer.py
-(backtesting)        (Markowitz)
-│
-▼
-dashboard/streamlit_app.py
-(Streamlit + Groq AI)
+
+yfinance API          Alpaca WebSocket
+│                          │
+▼                          ▼
+data/fetcher.py        data/stream.py
+│  (historical)        │  (live bars)
+└──────────┬───────────┘
+           ▼
+       SQLite DB
+    ┌──────────────┐
+    │ ohlcv        │  historical daily bars
+    │ ohlcv_live   │  real-time minute bars
+    └──────┬───────┘
+           ▼
+    data/normalizer.py
+           │
+           ▼
+    strategies/ (signals)
+           │
+  ┌────────┼────────┐
+  ▼        ▼        ▼
+Momentum MeanRev  MACD + Bollinger
+  └────────┼────────┘
+           ▼
+  Ensemble Signal (-4 to +4)
+           │
+  ┌────────┴────────┐
+  ▼                 ▼
+portfolio/risk.py   portfolio/optimizer.py
+(backtesting)       (Markowitz)
+           │
+           ▼
+  dashboard/streamlit_app.py
+  (Streamlit + Groq AI + Live Price)
 
 ## Data Layer
 
 - **fetcher.py**: Downloads 2 years of daily OHLCV data for all 5 ETFs via yfinance
-- **database.py**: SQLite storage with `load_ohlcv(ticker)` helper
+- **stream.py**: Alpaca WebSocket client — subscribes to minute bars for all 5 ETFs and writes them to the `ohlcv_live` SQLite table. Run as a background process alongside the dashboard (`python data/stream.py`)
+- **database.py**: SQLite storage with 4 tables (`ohlcv`, `ohlcv_live`, `signals`, `portfolio_weights`). Key helpers: `load_ohlcv(ticker)`, `load_live_price(ticker)`
 - **normalizer.py**: Calculates SMA(20/50), RSI(14), MACD(12/26/9), Bollinger Bands(20,2)
+
+### Real-time data flow
+
+The dashboard fetches near-realtime prices two ways (in priority order):
+1. **yfinance 1-min bar** — `@st.cache_data(ttl=60)`, refreshes every 60 seconds
+2. **Alpaca WebSocket** — `stream.py` writes minute bars to `ohlcv_live`; the dashboard reads `load_live_price(ticker)` as fallback
+
+The sidebar shows a **LIVE** badge next to the current price when live data is available.
 
 ## Strategy Layer
 
