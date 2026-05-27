@@ -40,22 +40,6 @@ C = dict(
 st.set_page_config(page_title="AlphaTrade", layout="wide",
                    initial_sidebar_state="expanded")
 
-# Force sidebar open regardless of browser localStorage state
-st.iframe("""
-<script>
-(function() {
-    function forceOpen() {
-        var sidebar = window.parent.document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar && sidebar.getAttribute('aria-expanded') === 'false') {
-            var btn = window.parent.document.querySelector('[data-testid="stSidebarCollapseButton"] button');
-            if (btn) btn.click();
-        }
-    }
-    setTimeout(forceOpen, 300);
-    setTimeout(forceOpen, 800);
-})();
-</script>
-""", height=0)
 
 # ── Global CSS ────────────────────────────────────────────────────
 st.markdown("""
