@@ -27,7 +27,8 @@ alphatrade/
 │   ├── base.py            # abstract Strategy class
 │   ├── mean_reversion.py  # z-score mean reversion
 │   ├── momentum.py        # dual SMA crossover
-│   ├── macd_crossover.py  # MACD signal line crossover (AI agent PR #5)
+│   ├── macd_crossover.py  # MACD signal line crossover
+│   ├── bollinger_bands.py # Bollinger Bands mean reversion (AI agent PR #9)
 │   └── ml_model.py        # Random Forest classifier
 ├── portfolio/
 │   ├── optimizer.py       # Markowitz / max-Sharpe
@@ -52,7 +53,8 @@ alphatrade/
 
 | PR | Branch | Description | Author |
 |----|--------|-------------|--------|
-| [#5](https://github.com/ZppGiovanni/alphatrade/pull/5) | `feat/macd-crossover-strategy` | MACD Crossover strategy + tests | AI agent (Claude) |
+| [#5](https://github.com/ZppGiovanni/alphatrade/pull/5) | `feat/macd-crossover-strategy` | MACD Crossover strategy + tests | Andrea Matteri |
+| [#9](https://github.com/ZppGiovanni/alphatrade/pull/9) | `feat/bollinger-bands-strategy` | Bollinger Bands strategy + tests | AI agent (Claude) |
 
 ### How to contribute as an agent
 
@@ -113,7 +115,6 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # add your API keys
-python data/database.py --init
 pytest tests/
 ```
 
