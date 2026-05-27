@@ -2,6 +2,7 @@ import sys
 sys.path.insert(0, ".")
 
 import os
+import re
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -10,7 +11,7 @@ from dotenv import load_dotenv
 from groq import Groq
 
 from data.database import load_ohlcv, DB_PATH
-from data.fetcher import fetch_all
+from data.fetcher import fetch_all, fetch_historical
 from data.normalizer import add_indicators
 from strategies.mean_reversion import MeanReversionStrategy
 from strategies.momentum import MomentumStrategy
@@ -75,7 +76,7 @@ html, body, [class*="css"], [data-testid], .stMarkdown, .stText,
     100% { background-position: 0% 50%;   }
 }
 .animated-title {
-    background: linear-gradient(270deg, #4FC3F7, #26a69a, #CE93D8, #FFB74D, #4FC3F7);
+    background: linear-gradient(270deg, #4FC3F7, #1E88E5, #1565C0, #29B6F6, #4FC3F7);
     background-size: 400% 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -262,10 +263,19 @@ def _get_strategy(name):
 
 
 # ── Cached heavy computations ─────────────────────────────────────
-@st.cache_data
-def _comparison_data(ticker):
+@st.cache_data(ttl=3600)
+def _load(ticker):
+    from data.database import save_ohlcv, _load_ohlcv_cached
+    fresh = fetch_historical(ticker)
+    save_ohlcv(fresh)
+    _load_ohlcv_cached.cache_clear()
     df = load_ohlcv(ticker)
-    df = add_indicators(df)
+    return add_indicators(df)
+
+
+@st.cache_data(ttl=3600)
+def _comparison_data(ticker, n_bars):
+    df = _load(ticker)
     rows, returns, bh_ref = [], [], None
     for name, strat in [
         ("Momentum",       MomentumStrategy(params={"short_window": 20, "long_window": 50})),
@@ -273,8 +283,8 @@ def _comparison_data(ticker):
         ("MACD Crossover", MACDCrossoverStrategy(params={})),
         ("Bollinger Bands", BollingerBandsStrategy(params={"window": 20, "num_std": 2.0})),
     ]:
-        sig = strat.generate_signals(df)
-        res = backtest(df["close"], sig)
+        sig = strat.generate_signals(df).iloc[-n_bars:]
+        res = backtest(df["close"].iloc[-n_bars:], sig)
         if bh_ref is None:
             bh_ref = res["buy_and_hold"]
         rows.append({
@@ -289,10 +299,10 @@ def _comparison_data(ticker):
     return rows, returns, bh_ref
 
 
-@st.cache_data
-def _portfolio_weights():
-    prices = pd.DataFrame({t: load_ohlcv(t)["close"] for t in ASSETS})
-    return compute_weights(prices)
+@st.cache_data(ttl=3600)
+def _portfolio_weights(n_bars):
+    prices = pd.DataFrame({t: _load(t)["close"] for t in ASSETS})
+    return compute_weights(prices.iloc[-n_bars:])
 
 
 # ── Sidebar: controls ─────────────────────────────────────────────
@@ -318,11 +328,14 @@ with st.sidebar:
             f'letter-spacing:0.05em;margin-top:0.8rem;margin-bottom:4px;font-family:Inter,sans-serif">Period</p>')
     period_label = st.selectbox("Period", list(PERIODS.keys()),
                                 index=3, label_visibility="collapsed")
+    st.html("<div style='margin-top:1rem'></div>")
+    if st.button("↻  Refresh Data", use_container_width=True, type="primary"):
+        st.cache_data.clear()
+        st.rerun()
 
 
 # ── Load data once ────────────────────────────────────────────────
-df_full  = load_ohlcv(selected)
-df_full  = add_indicators(df_full)
+df_full  = _load(selected)
 n_bars   = PERIODS[period_label]
 df       = df_full.iloc[-n_bars:].copy()
 # Compute signals on full history, then slice — avoids warm-up NaNs in
@@ -541,7 +554,7 @@ with tab3:
 
 # ── Tab 4: Strategy Comparison ────────────────────────────────────
 with tab4:
-    rows_cmp, returns_cmp, bh_ref = _comparison_data(selected)
+    rows_cmp, returns_cmp, bh_ref = _comparison_data(selected, n_bars)
     col_l, col_r = st.columns(2)
     with col_l:
         _section("Performance Table")
@@ -590,7 +603,7 @@ with tab4:
 # ── Tab 5: Portfolio Weights ──────────────────────────────────────
 with tab5:
     try:
-        weights = _portfolio_weights()
+        weights = _portfolio_weights(n_bars)
         names_w = list(weights.keys())
         vals_w  = list(weights.values())
         col_l, col_r = st.columns(2)
@@ -618,7 +631,7 @@ with tab5:
                 xaxis_tickformat=".0%", margin=dict(l=0, r=60, t=10, b=0)))
             _axes(fig_wbar)
             _chart(fig_wbar)
-        st.caption("Markowitz Mean-Variance Optimization — Max Sharpe Ratio")
+        st.caption(f"Markowitz Mean-Variance Optimization — Max Sharpe Ratio · Period: {period_label}")
     except Exception as e:
         st.error(f"Portfolio optimization failed: {e}")
 
@@ -675,15 +688,15 @@ with tab6:
                        for v in consensus.values]
         fig_con = go.Figure(go.Bar(x=consensus.index, y=consensus.values,
             marker_color=bar_col_con, opacity=0.85, showlegend=False))
-        for lvl, col, lbl in [(2, C["green"], "STRONG BUY"),
-                              (-2, C["red"],  "STRONG SELL")]:
+        for lvl, col, lbl in [(3, C["green"], "STRONG BUY"),
+                              (-3, C["red"],  "STRONG SELL")]:
             fig_con.add_hline(y=lvl, line_dash="dash", line_color=col,
                 annotation_text=lbl, annotation_position="top right",
                 annotation_font_color=col)
         fig_con.add_hline(y=0, line_dash="dot",
                           line_color="rgba(255,255,255,0.2)")
         fig_con.update_layout(**_dark(height=280,
-            yaxis=dict(tickvals=[-3, -2, -1, 0, 1, 2, 3], title="Score")))
+            yaxis=dict(tickvals=[-4, -3, -2, -1, 0, 1, 2, 3, 4], title="Score")))
         _axes(fig_con)
         _chart(fig_con)
 
@@ -725,12 +738,15 @@ Provide: 1) Market conditions, 2) Signal interpretation, 3) Risk considerations,
                         model="llama-3.3-70b-versatile", max_tokens=1024,
                         messages=[{"role": "user", "content": prompt}])
                 content = resp.choices[0].message.content
+                html_content = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', content)
+                html_content = re.sub(r'^#{1,3} (.+)$', r'<strong style="font-size:1rem">\1</strong>', html_content, flags=re.MULTILINE)
+                html_content = html_content.replace("\n", "<br>")
                 st.html(f"""
                 <div style="background:{C['surface']};border:1px solid {C['border']};
                             border-left:4px solid {C['blue']};border-radius:10px;
                             padding:1.4rem 1.8rem;margin-top:0.5rem;line-height:1.75;
                             color:#e0e0e0;font-size:0.95rem">
-                    {content.replace(chr(10), "<br>")}
+                    {html_content}
                 </div>""")
             except Exception as e:
                 st.error(f"AI request failed: {e}")

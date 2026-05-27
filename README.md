@@ -155,7 +155,7 @@ The **Quick Stats** panel at the bottom of the sidebar always shows the last clo
 
 **Comparison** — Side-by-side performance table and bar chart for all four quantitative strategies (Momentum, Mean Reversion, MACD Crossover, Bollinger Bands) on the selected asset and period.
 
-**Portfolio** — Max-Sharpe portfolio weights via Markowitz optimization (donut + bar chart), asset correlation heatmap, and monthly returns heatmap.
+**Portfolio** — Max-Sharpe portfolio weights via Markowitz optimization, shown as donut chart and horizontal bar chart.
 
 **Consensus** — Ensemble signal combining all four quant strategies into a score from -4 (strong sell) to +4 (strong buy). Includes a gauge chart, consensus bar chart over time, and daily returns distribution.
 
