@@ -466,10 +466,10 @@ with tab1:
     fig.add_trace(go.Scatter(x=sells.index, y=sells["high"] * 1.015,
         mode="markers", name="Sell",
         marker=dict(color=C["red"], size=9, symbol="triangle-down")), row=1, col=1)
-    vol_col = [C["green"] if c >= o else C["red"]
-               for c, o in zip(df["close"], df["open"])]
-    fig.add_trace(go.Bar(x=df.index, y=df["volume"], marker_color=vol_col,
-        opacity=0.7, showlegend=False), row=2, col=1)
+    fig.add_trace(go.Scatter(x=df.index, y=df["volume"],
+        line=dict(color=C["blue"], width=1),
+        fill="tozeroy", fillcolor="rgba(79,195,247,0.15)",
+        showlegend=False), row=2, col=1)
     fig.add_trace(go.Scatter(
         x=list(df.index) + list(df.index[::-1]),
         y=[70] * len(df) + [30] * len(df),
