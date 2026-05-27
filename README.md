@@ -345,8 +345,8 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
 | Name | Role | Contribution |
 |------|------|-------------|
-| **Andrea Matteri** | Strategies · Dashboard | MACD Crossover strategy, Bollinger Bands dashboard integration, dashboard redesign, ensemble signal, AI market analysis |
-| **Giovanni Zoppis** | Architecture · Data · ML · Backend | Data pipeline, database, strategies, ML model, portfolio optimizer, backtesting engine, dashboard |
+| **Andrea Matteri** | Strategies · Backtesting · Dashboard | MACD Crossover strategy, Bollinger Bands dashboard integration, backtesting engine, ensemble signal & consensus dashboard, AI market analysis, dashboard redesign & styling |
+| **Giovanni Zoppis** | Architecture · Data · ML · Backend | System architecture, data pipeline, SQLite database, ML model (Random Forest), portfolio optimizer, initial dashboard setup |
 | **Manuela Benfante** | Documentation · Testing | LaTeX report, testing support |
 | **Federico Pizzati** | Documentation · Presentation | LaTeX report, presentation slides |
 
