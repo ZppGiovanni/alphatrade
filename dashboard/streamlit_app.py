@@ -440,7 +440,7 @@ with tab1:
     _section(f"{selected} — Candlestick + SMA")
 
     fig = make_subplots(rows=3, cols=1, shared_xaxes=True,
-        row_heights=[0.58, 0.18, 0.24], vertical_spacing=0.03,
+        row_heights=[0.58, 0.18, 0.24], vertical_spacing=0.06,
         subplot_titles=("", "Volume", "RSI (14)"))
     fig.add_trace(go.Candlestick(
         x=df.index, open=df["open"], high=df["high"], low=df["low"], close=df["close"],
