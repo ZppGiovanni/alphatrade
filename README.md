@@ -66,34 +66,25 @@ Backtest on 2Y daily data (2023–2025), applied to all 5 ETFs. Results below sh
 
 ## Project Structure
 
-```
-alphatrade/
-├── data/
-│   ├── fetcher.py        # yfinance historical download
-│   ├── stream.py         # Alpaca WebSocket live feed
-│   ├── normalizer.py     # Cleaning, validation, technical indicators
-│   └── database.py       # SQLite read/write helpers
-├── strategies/
-│   ├── base.py           # Abstract Strategy interface
-│   ├── mean_reversion.py # Z-score mean reversion
-│   ├── momentum.py       # Dual moving average crossover
-│   ├── macd_crossover.py  # MACD signal line crossover
-│   ├── bollinger_bands.py # Bollinger Bands mean reversion — AI agent PR #9
-│   └── ml_model.py        # Random Forest classifier
-├── portfolio/
-│   ├── optimizer.py      # Markowitz / max-Sharpe optimization
-│   └── risk.py           # Backtesting engine, drawdown, Sharpe
-├── execution/
-│   └── order_manager.py  # Paper trading via Alpaca
-├── dashboard/
-│   └── streamlit_app.py  # Streamlit dashboard (main)
-├── tests/
-│   └── test_strategies.py
-├── docs/
-│   └── architecture.md   # System architecture and design decisions
-├── AGENTS.md             # AI agent contribution guide
-└── requirements.txt
-```
+| File | Description |
+|------|-------------|
+| `data/fetcher.py` | Historical OHLCV download via yfinance |
+| `data/normalizer.py` | Data cleaning, validation & technical indicators |
+| `data/database.py` | SQLite read/write helpers |
+| `data/stream.py` | Live market feed via Alpaca WebSocket |
+| `strategies/base.py` | Abstract Strategy interface |
+| `strategies/momentum.py` | Dual SMA crossover (SMA 20/50) |
+| `strategies/mean_reversion.py` | Z-score mean reversion |
+| `strategies/macd_crossover.py` | MACD signal line crossover |
+| `strategies/bollinger_bands.py` | Bollinger Bands mean reversion — AI agent PR #9 |
+| `strategies/ml_model.py` | Random Forest classifier |
+| `portfolio/optimizer.py` | Markowitz mean-variance, max-Sharpe |
+| `portfolio/risk.py` | Backtesting engine, drawdown, Sharpe ratio |
+| `execution/order_manager.py` | Paper trading via Alpaca API |
+| `dashboard/streamlit_app.py` | Streamlit dashboard (entry point) |
+| `tests/test_strategies.py` | Unit tests for all strategies (pytest) |
+| `docs/architecture.md` | System architecture & design decisions |
+| `AGENTS.md` | AI agent contribution guide |
 
 ---
 
